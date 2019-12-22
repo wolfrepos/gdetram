@@ -1,21 +1,29 @@
 #!/bin/bash
 
 # Format
-# insert into stop values ('1168',   '1-й км',      'Пионерскую',           56.863213, 60.61197,  'tram'  );
-# insert into stop values ('962563', 'Ярославская', 'ст. Коммунистическая', 56.9129,   60.598927, 'troll' );
-# insert into stop values ('36222',  'Индустрии',   'Ильича',               56.899097, 60.59874,  'bus'   );
+# insert into stop values ('1168', '1-й км', 'Пионерскую', 56.863213, 60.61197, 'tram');
 # link: https://www.bustime.ru/ekaterinburg/stop/id/98120/
 
 
 LINK="https://www.bustime.ru"
-CITY="ekaterinburg"
+CITY=$1
+startID=$2
+stopID=$3
 
 function using
 {
-	echo "HELP"
-	echo "Script for getting stop information from bustime"
+        echo "-- HELP --"
+        echo "Script for getting stop information from bustime"
+	echo "	args: <city> <start id> <stop id> "
 }
 
+function args_parsing
+{
+	if [ -z "$CITY" ] || [ -z "$startID" ] || [ -z "$stopID" ]; then
+		using
+		exit
+	fi
+}
 
 function get_general_stop
 {
@@ -49,9 +57,11 @@ function _delay
 
 function main
 {
-	local id=35000 # for example
-	local max_id=35100
+	args_parsing
+	local id=$startID
+	local max_id=$stopID
 	while [[ ! $id -gt $max_id  ]]; do
+		#echo "[id: $id]"
 		id=$((id + 1))
 		local curl_message=$(curl "$LINK/$CITY/stop/id/$id/" 2>/dev/null)
 		local general_stop=$(get_general_stop "$curl_message")
@@ -66,12 +76,11 @@ function main
 		if [[ -z "$gps" ]]; then
 			continue
 		fi
-		echo "insert into stop values ($id, '$general_stop', '$second_stop', $gps)"
+		echo "insert into stop values ($id, '$general_stop', '$second_stop', $gps, 'bus', '$CITY')"
 		_delay $id
 	done
 
 }
-
 
 # run
 main
