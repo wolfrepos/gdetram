@@ -1,0 +1,3 @@
+[submodule "utils/GdeTramStatsBot"]
+	path = utils/GdeTramStatsBot
+	url = git@github.com:a-khakimov/GdeTramStatsBot.git
