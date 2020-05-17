@@ -18,5 +18,4 @@ internet sources (sites, services) and provides this info in pretty format.
 
 ### Screenshots
 
-<img src="https://i.imgur.com/VMEynEs.jpg" width="320">
-<img src="https://i.imgur.com/5Tub9cJ.jpg" width="320">
+<img src="https://i.imgur.com/VMEynEs.jpg" width="320">|<img src="https://i.imgur.com/5Tub9cJ.jpg" width="320">
