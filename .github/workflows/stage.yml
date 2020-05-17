@@ -64,8 +64,8 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         password: ${{ secrets.SSH_PASS }}
         script: |
-          cp /tmp/app-stage.jar ~/gdetram-stage/app.jar
-          sudo systemctl restart gdetram-app-stage
+          cp /tmp/app-stage.jar ~/dickson/app.jar
+          sudo systemctl restart dickson
     # report that job is done
     - name: Inform command
       uses: appleboy/telegram-action@master
