@@ -1,9 +1,22 @@
 # GDETRAM
 
-Simple application which aggregates info about transport arrival time in citites: Yekaterinburg (Russia).
+![master](https://github.com/oybek/gdetram/workflows/master/badge.svg)
 
-Also provides chat bot interface for messengers: vkontakte, telegram
+Simple chat-bot which aggregates info about transport arrival time from many
+internet sources (sites, services) and provides this info in pretty format.
 
-# Photos
+### Supported platforms
 
-<img src="https://i.imgur.com/6J9H3P4.jpg" width="400">
+- Telegram (https://t.me/gdetrambot)
+- Vk (https://vk.com/gdetram)
+
+### Supported cities
+
+- Yekaterinburg `10k users`
+- Kazan `100 users`
+- Perm `50 users`
+
+### Screenshots
+
+<img src="https://i.imgur.com/VMEynEs.jpg" width="320">
+<img src="https://i.imgur.com/5Tub9cJ.jpg" width="320">
