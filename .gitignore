@@ -22,3 +22,5 @@ project/metals.sbt
 
 plato
 
+.scannerwork/
+

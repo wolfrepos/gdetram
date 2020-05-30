@@ -36,8 +36,17 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Compile/Test/Assembly
-      run: sbt "compile; test; set test in assembly := {}; assembly"
+    - name: test/coverage
+      run: |
+        sbt clean coverage test
+        sbt coverageReport
+    - name: sonar
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: sbt -Dsonar.login=$SONAR_TOKEN sonarScan
+    - name: assembly
+      run: sbt "clean; set test in assembly := {}; assembly"
     - name: Deploy
       uses: garygrossgarten/github-action-scp@release
       with:
