@@ -1,4 +1,4 @@
-package io.github.oybek.gdetram.domain
+package io.github.oybek.gdetram.domain.model
 
 import io.github.oybek.gdetram.util.vk.api.{Action, Keyboard, Button => VkButton}
 import telegramium.bots.{InlineKeyboardButton, InlineKeyboardMarkup, MarkupInlineKeyboard}
@@ -10,7 +10,7 @@ case object GeoButton extends Button
 
 object Button {
 
-  implicit class VkButtonConverter(button: Button) {
+  implicit class VkButtonConverter(val button: Button) extends AnyVal {
     def toVk: VkButton = button match {
       case TextButton(text) =>
         VkButton(Action(`type` = "text", label = Some(text.take(40))))
@@ -20,7 +20,7 @@ object Button {
     }
   }
 
-  implicit class TgButtonConverter(button: Button) {
+  implicit class TgButtonConverter(val button: Button) extends AnyVal {
     def toTg: Option[InlineKeyboardButton] = button match {
       case TextButton(text) =>
         Some(InlineKeyboardButton(text = text, callbackData = Some(text)))
@@ -30,7 +30,7 @@ object Button {
     }
   }
 
-  implicit class KeyboardConverter(button: List[List[Button]]) {
+  implicit class KeyboardConverter(val button: List[List[Button]]) extends AnyVal {
     def toVk: Keyboard =
       Keyboard(
         oneTime = Some(false),

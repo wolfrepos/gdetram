@@ -1,7 +1,7 @@
-package io.github.oybek.gdetram.domain
+package io.github.oybek.gdetram.domain.model
 
-import doobie.util.meta.Meta
 import doobie.postgres.implicits._
+import doobie.util.meta.Meta
 
 sealed trait Platform
 

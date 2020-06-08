@@ -6,7 +6,7 @@ import java.sql.Timestamp
 import cats.syntax.all._
 import cats.effect.Sync
 import io.github.oybek.gdetram.db.repository.{DailyMetric, JournalRepoAlg, UserRepoAlg}
-import io.github.oybek.gdetram.domain.Platform
+import io.github.oybek.gdetram.domain.model.Platform
 import io.github.oybek.gdetram.util.Chart
 
 trait MetricServiceAlg[F[_]] {

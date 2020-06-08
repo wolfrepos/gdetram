@@ -5,11 +5,11 @@ import java.sql.Timestamp
 import cats.effect.Sync
 import doobie.util.transactor.Transactor
 import doobie.util.update.Update0
-import io.github.oybek.gdetram.domain.{Platform, Record}
 import doobie._
 import doobie.implicits._
 import doobie.implicits.javasql._
 import doobie.util.query.Query0
+import io.github.oybek.gdetram.domain.model.Record
 
 case class DailyMetric(dateWhen: Timestamp, cityName: String, active: Int, passive: Int)
 

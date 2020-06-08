@@ -4,9 +4,9 @@ import cats.syntax.all._
 import cats.effect.Sync
 import doobie.util.transactor.Transactor
 import doobie.util.update.Update0
-import io.github.oybek.gdetram.domain.{City, Platform, Record, User}
 import doobie.implicits._
 import doobie.util.query.Query0
+import io.github.oybek.gdetram.domain.model.{City, Platform, User}
 
 trait UserRepoAlg[F[_]] {
   def upsert(user: User): F[Int]

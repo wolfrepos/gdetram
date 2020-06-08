@@ -6,8 +6,9 @@ import cats.effect.syntax.all._
 import cats.effect.{Async, Concurrent, Sync, Timer}
 import cats.syntax.all._
 import io.github.oybek.gdetram.db.repository.JournalRepoAlg
-import io.github.oybek.gdetram.domain.Platform.Tg
-import io.github.oybek.gdetram.service.{CoreAlg, MetricServiceAlg}
+import io.github.oybek.gdetram.domain.BrainAlg
+import io.github.oybek.gdetram.domain.model.Platform.Tg
+import io.github.oybek.gdetram.service.MetricServiceAlg
 import io.github.oybek.gdetram.util.TgExtractors
 import io.github.oybek.gdetram.util.vk.Coord
 import org.slf4j.{Logger, LoggerFactory}
@@ -16,7 +17,7 @@ import telegramium.bots.high.LongPollBot
 
 class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
                                            (implicit bot: Api[F],
-                                            core: CoreAlg[F],
+                                            core: BrainAlg[F],
                                             journalRepo: JournalRepoAlg[F],
                                             metricService: MetricServiceAlg[F])
     extends LongPollBot[F](bot)

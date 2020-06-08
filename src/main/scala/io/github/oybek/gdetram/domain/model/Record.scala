@@ -1,4 +1,4 @@
-package io.github.oybek.gdetram.domain
+package io.github.oybek.gdetram.domain.model
 
 import java.sql.Timestamp
 

@@ -1,30 +1,30 @@
-package io.github.oybek.gdetram.service
+package io.github.oybek.gdetram.domain
 
 import java.sql.Timestamp
 
+import cats.effect.{Concurrent, Sync, Timer}
 import cats.implicits._
-import cats.effect.{Timer, Concurrent, Sync}
 import io.github.oybek.gdetram.db.repository._
-import io.github.oybek.gdetram.domain._
-import io.github.oybek.gdetram.service.extractor.ExtractorAlg
+import io.github.oybek.gdetram.domain.model.{Button, GeoButton, LinkButton, Platform, Record, Stop, TextButton, User}
+import io.github.oybek.gdetram.service.{TabloidAlg, PsServiceAlg}
 import io.github.oybek.gdetram.util.Formatting
 import io.github.oybek.gdetram.util.vk.Coord
 
-trait CoreAlg[F[_]] {
+trait BrainAlg[F[_]] {
   def handleText(stateKey: (Platform, Long),
                  text: String): F[(String, List[List[Button]])]
   def handleGeo(stateKey: (Platform, Long),
                 coord: Coord): F[(String, List[List[Button]])]
 }
 
-class Core[F[_]: Sync: Concurrent: Timer](implicit
-                                          cityRepo: CityRepoAlg[F],
-                                          extractor: ExtractorAlg[F],
-                                          journalRepo: JournalRepoAlg[F],
-                                          spamService: SpamServiceAlg[F],
-                                          stopRepo: StopRepoAlg[F],
-                                          userRepo: UserRepoAlg[F])
-    extends CoreAlg[F] {
+class Brain[F[_]: Sync: Concurrent: Timer](implicit
+                                           cityRepo: CityRepoAlg[F],
+                                           tabloid: TabloidAlg[F],
+                                           journalRepo: JournalRepoAlg[F],
+                                           psService: PsServiceAlg[F],
+                                           stopRepo: StopRepoAlg[F],
+                                           userRepo: UserRepoAlg[F])
+    extends BrainAlg[F] {
 
   override def handleText(stateKey: (Platform, Long),
                           text: String): F[(String, List[List[Button]])] =
@@ -83,8 +83,8 @@ class Core[F[_]: Sync: Concurrent: Timer](implicit
               tabloidText <- getTabloid(stop)
               currentMillis <- Timer[F].clock.realTime(scala.concurrent.duration.MILLISECONDS)
               _ <- journalRepo.insert(Record(stop.id, new Timestamp(currentMillis), stateKey._2.toString, text, stateKey._1))
-              spamText <- spamService.getNotDeliveredMessageFor(stateKey)
-              res = tabloidText + spamText.map("\n" + _).getOrElse("")
+              psText <- psService.getNotDeliveredMessageFor(stateKey)
+              res = tabloidText + psText.map("\n" + _).getOrElse("")
             } yield res -> defaultKeyboard(
               TextButton("город " + user.city.name),
               TextButton(stop.name)
@@ -122,7 +122,7 @@ class Core[F[_]: Sync: Concurrent: Timer](implicit
     }
 
   private def getTabloid(stop: Stop) = {
-    extractor
+    tabloid
       .extractInfo(stop)
       .map {
         case Nil => s"На остановку ${stop.name} сейчас ничего не едет"

@@ -1,4 +1,4 @@
-package io.github.oybek.gdetram.service.extractor
+package io.github.oybek.gdetram.service
 
 import java.util.concurrent.ConcurrentHashMap
 
@@ -11,7 +11,11 @@ import org.slf4j.LoggerFactory
 import scala.collection.JavaConverters._
 import scala.collection._
 
-class DocumentFetcher[F[_]: Sync: Clock] extends DocumentFetcherAlg[F] {
+trait DocFetcherAlg[F[_]] {
+  def fetchCached(url: String): F[Option[Document]]
+}
+
+class DocFetcher[F[_]: Sync: Clock] extends DocFetcherAlg[F] {
   private val log = LoggerFactory.getLogger("DocumentFetcher")
   private val cache: concurrent.Map[String, (Long, Document)] =
     new ConcurrentHashMap[String, (Long, Document)](1 << 12).asScala

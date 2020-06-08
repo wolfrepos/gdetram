@@ -1,6 +1,4 @@
-package io.github.oybek.gdetram.domain
-
-import cats.data.NonEmptyList
+package io.github.oybek.gdetram.domain.model
 
 case class Stop(id: Int,
                 name: String,

@@ -2,9 +2,9 @@ package io.github.oybek.gdetram.db.repository
 
 import doobie.util.query.Query0
 import doobie.util.update.Update0
-import io.github.oybek.gdetram.domain.{City, Platform, Record, SpamMessage, Stop, User}
 import doobie.implicits._
 import doobie.implicits.javasql._
+import io.github.oybek.gdetram.domain.model.{City, Platform, PsMessage, Record, Stop, User}
 
 object Queries {
 
@@ -74,18 +74,18 @@ object Queries {
     sql"insert into journal values ($stopId, $time, $userId, $text, $platform)".update
   }
 
-  def insertMessageSql(message: SpamMessage): Update0 =
+  def insertMessageSql(message: PsMessage): Update0 =
     sql"insert into message(text) values (${message.text})".update
 
   def getNotDeliveredMessageForSql(
     user: (Platform, Long)
-  ): Query0[SpamMessage] =
+  ): Query0[PsMessage] =
     sql"""
          |select id, text from message where
          |  not exists(
          |    select 1 from delivered where message_id = id and user_id = ${user._2.toString} and platform = ${user._1}
          |  )
-         |""".stripMargin.query[SpamMessage]
+         |""".stripMargin.query[PsMessage]
 
   def markDeliveredForUserSql(messageId: Int,
                               forUser: (Platform, Long)): Update0 =

@@ -1,8 +1,8 @@
 package io.github.oybek.gdetram.util
 
 import cats.data.NonEmptyList
+import io.github.oybek.gdetram.domain.model.Stop
 import io.github.oybek.gdetram.donnars.StopDonnar
-import io.github.oybek.gdetram.domain.Stop
 import io.github.oybek.plato.model.{Arrival, TransportT}
 import io.github.oybek.plato.model.TransportT.{Bus, Tram}
 import org.scalatest.{FlatSpec, Matchers}

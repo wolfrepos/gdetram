@@ -7,8 +7,9 @@ import doobie.hikari.HikariTransactor
 import io.github.oybek.gdetram.config.Config
 import io.github.oybek.gdetram.db.DB
 import io.github.oybek.gdetram.db.repository._
-import io.github.oybek.gdetram.service.extractor.{SourceA, DocumentFetcher, DocumentFetcherAlg, ExtractorAlg}
-import io.github.oybek.gdetram.service.{Core, CoreAlg, MetricService, MetricServiceAlg, SpamService, SpamServiceAlg}
+import io.github.oybek.gdetram.domain.{Brain, BrainAlg}
+import io.github.oybek.gdetram.service.{DocFetcherAlg, TabloidA}
+import io.github.oybek.gdetram.service._
 import io.github.oybek.gdetram.util.TimeTools._
 import io.github.oybek.gdetram.util.vk.api.{VkApi, VkApiHttp4s}
 import org.http4s.client.Client
@@ -41,12 +42,12 @@ object Main extends IOApp {
             implicit val messageRepo      : MessageRepoAlg[F]     = new MessageRepo[F](transactor)
             implicit val stopRepo         : StopRepoAlg[F]        = new StopRepo(transactor)
             implicit val userRepo         : UserRepoAlg[F]        = new UserRepo[F](transactor)
-            implicit val documentFetcher  : DocumentFetcherAlg[F] = new DocumentFetcher[F]
-            implicit val spamService      : SpamServiceAlg[F]     = new SpamService[F]
+            implicit val documentFetcher  : DocFetcherAlg[F] = new DocFetcher[F]
+            implicit val PsService        : PsServiceAlg[F]       = new PsService[F]
             implicit val vkBotApi         : VkApi[F]              = new VkApiHttp4s[F](client)
             implicit val tgBotApi         : Api[F]                = new ApiHttp4sImp[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}")
-            implicit val source1          : ExtractorAlg[F]       = new SourceA[F]
-            implicit val core             : CoreAlg[F]            = new Core[F]
+            implicit val source1          : TabloidAlg[F]         = new TabloidA[F]
+            implicit val core             : BrainAlg[F]            = new Brain[F]
             implicit val metricService    : MetricServiceAlg[F]   = new MetricService[F]()
 
             val vkBot = new VkBot[F](config.getLongPollServerReq)

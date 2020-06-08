@@ -6,25 +6,25 @@ import cats.effect.concurrent.Ref
 import doobie.util.ExecutionContexts
 import io.github.oybek.gdetram.db.repository.{CityRepoAlg, JournalRepoAlg, StopRepoAlg, UserRepoAlg}
 import io.github.oybek.gdetram.donnars.StopDonnar
-import io.github.oybek.gdetram.domain.Platform.Vk
+import io.github.oybek.gdetram.domain.model.Platform.Vk
+import io.github.oybek.gdetram.domain.model.{City, Stop, User}
 import io.github.oybek.plato.model.TransportT.{Bus, Tram, Troll}
 import io.github.oybek.plato.model.{Arrival, TransportT}
-import io.github.oybek.gdetram.domain.{City, Platform, Stop, User}
-import io.github.oybek.gdetram.service.extractor.ExtractorAlg
+import io.github.oybek.gdetram.domain.Brain
 import io.github.oybek.gdetram.util.vk.Coord
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.concurrent.duration._
 
-class CoreSpec extends FlatSpec with Matchers with MockFactory with StopDonnar {
+class BrainSpec extends FlatSpec with Matchers with MockFactory with StopDonnar {
   implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
   implicit val tm = IO.timer(ExecutionContexts.synchronous)
 
   implicit val journalRepo = stub[JournalRepoAlg[IO]]
-  implicit val spamService = stub[SpamServiceAlg[IO]]
+  implicit val PSService = stub[PsServiceAlg[IO]]
   implicit val stopRepo = stub[StopRepoAlg[IO]]
-  implicit val extractor = stub[ExtractorAlg[IO]]
+  implicit val extractor = stub[TabloidAlg[IO]]
   implicit val cityRepo = stub[CityRepoAlg[IO]]
   implicit val userRepo = stub[UserRepoAlg[IO]]
 
@@ -49,12 +49,12 @@ class CoreSpec extends FlatSpec with Matchers with MockFactory with StopDonnar {
       .when(*)
       .returns(IO { 1 })
 
-    (spamService.getNotDeliveredMessageFor _)
+    (PSService.getNotDeliveredMessageFor _)
       .when(*)
       .returns(IO { None })
 
     // action
-    val core = new Core[IO]
+    val core = new Brain[IO]
     val result = core.handleText(Vk -> 123, "Дом кино")
 
     // check
@@ -68,11 +68,11 @@ class CoreSpec extends FlatSpec with Matchers with MockFactory with StopDonnar {
   "when geo is got" must "find nearest stops and update cache" in {
     val user = Vk -> 123L
 
-    (spamService.getNotDeliveredMessageFor _)
+    (PSService.getNotDeliveredMessageFor _)
       .when(*)
       .returns(IO { None })
 
-    val core = new Core[IO]
+    val core = new Brain[IO]
 
     // TODO: complete the test
   }

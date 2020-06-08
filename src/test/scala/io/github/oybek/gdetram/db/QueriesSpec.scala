@@ -4,8 +4,9 @@ import java.sql.Timestamp
 
 import doobie.scalatest.IOChecker
 import io.github.oybek.gdetram.db.repository.{JournalRepo, Queries, UserRepo}
-import io.github.oybek.gdetram.domain.Platform.{Tg, Vk}
-import io.github.oybek.gdetram.domain.{Record, SpamMessage}
+import io.github.oybek.gdetram.domain.model.Platform.{Tg, Vk}
+import io.github.oybek.gdetram.domain.model
+import io.github.oybek.gdetram.domain.model.{PsMessage, Record}
 import org.scalatest.{FunSuite, Matchers}
 
 class QueriesSpec extends FunSuite with Matchers with IOChecker with TestTx {
@@ -37,7 +38,7 @@ class QueriesSpec extends FunSuite with Matchers with IOChecker with TestTx {
       Queries.insertRecordSql(Record(0, new Timestamp(3L), "0", "test", Vk))
     )
     check(
-      Queries.insertRecordSql(Record(0, new Timestamp(3L), "0", "test", Tg))
+      Queries.insertRecordSql(model.Record(0, new Timestamp(3L), "0", "test", Tg))
     )
   }
 
@@ -47,7 +48,7 @@ class QueriesSpec extends FunSuite with Matchers with IOChecker with TestTx {
   }
 
   test("Insert message") {
-    check(Queries.insertMessageSql(SpamMessage(text = "hello")))
+    check(Queries.insertMessageSql(PsMessage(text = "hello")))
   }
 
   test("Select not delivered message") {
