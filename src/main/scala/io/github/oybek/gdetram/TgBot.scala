@@ -6,7 +6,7 @@ import cats.effect.syntax.all._
 import cats.effect.{Async, Concurrent, Sync, Timer}
 import cats.syntax.all._
 import io.github.oybek.gdetram.db.repository.JournalRepoAlg
-import io.github.oybek.gdetram.model.Platform.Tg
+import io.github.oybek.gdetram.domain.Platform.Tg
 import io.github.oybek.gdetram.service.{CoreAlg, MetricServiceAlg}
 import io.github.oybek.gdetram.util.TgExtractors
 import io.github.oybek.gdetram.util.vk.Coord

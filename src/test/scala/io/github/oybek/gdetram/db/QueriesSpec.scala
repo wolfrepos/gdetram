@@ -4,8 +4,8 @@ import java.sql.Timestamp
 
 import doobie.scalatest.IOChecker
 import io.github.oybek.gdetram.db.repository.{JournalRepo, Queries, UserRepo}
-import io.github.oybek.gdetram.model.Platform.{Tg, Vk}
-import io.github.oybek.gdetram.model.{Record, SpamMessage}
+import io.github.oybek.gdetram.domain.Platform.{Tg, Vk}
+import io.github.oybek.gdetram.domain.{Record, SpamMessage}
 import org.scalatest.{FunSuite, Matchers}
 
 class QueriesSpec extends FunSuite with Matchers with IOChecker with TestTx {

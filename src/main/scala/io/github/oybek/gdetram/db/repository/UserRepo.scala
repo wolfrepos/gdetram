@@ -4,7 +4,7 @@ import cats.syntax.all._
 import cats.effect.Sync
 import doobie.util.transactor.Transactor
 import doobie.util.update.Update0
-import io.github.oybek.gdetram.model.{City, Platform, Record, User}
+import io.github.oybek.gdetram.domain.{City, Platform, Record, User}
 import doobie.implicits._
 import doobie.util.query.Query0
 

@@ -2,7 +2,7 @@ package io.github.oybek.gdetram.db.repository
 
 import cats.effect.Sync
 import doobie.util.transactor.Transactor
-import io.github.oybek.gdetram.model.{Platform, SpamMessage}
+import io.github.oybek.gdetram.domain.{Platform, SpamMessage}
 import doobie.implicits._
 
 trait MessageRepoAlg[F[_]] {

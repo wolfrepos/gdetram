@@ -7,7 +7,7 @@ import doobie.hikari.HikariTransactor
 import io.github.oybek.gdetram.config.Config
 import io.github.oybek.gdetram.db.DB
 import io.github.oybek.gdetram.db.repository._
-import io.github.oybek.gdetram.service.extractor.{Source1, DocumentFetcher, DocumentFetcherAlg, ExtractorAlg}
+import io.github.oybek.gdetram.service.extractor.{SourceA, DocumentFetcher, DocumentFetcherAlg, ExtractorAlg}
 import io.github.oybek.gdetram.service.{Core, CoreAlg, MetricService, MetricServiceAlg, SpamService, SpamServiceAlg}
 import io.github.oybek.gdetram.util.TimeTools._
 import io.github.oybek.gdetram.util.vk.api.{VkApi, VkApiHttp4s}
@@ -45,7 +45,7 @@ object Main extends IOApp {
             implicit val spamService      : SpamServiceAlg[F]     = new SpamService[F]
             implicit val vkBotApi         : VkApi[F]              = new VkApiHttp4s[F](client)
             implicit val tgBotApi         : Api[F]                = new ApiHttp4sImp[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}")
-            implicit val source1          : ExtractorAlg[F]       = new Source1[F]
+            implicit val source1          : ExtractorAlg[F]       = new SourceA[F]
             implicit val core             : CoreAlg[F]            = new Core[F]
             implicit val metricService    : MetricServiceAlg[F]   = new MetricService[F]()
 

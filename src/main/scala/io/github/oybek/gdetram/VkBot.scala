@@ -5,7 +5,7 @@ import cats.effect.syntax.all._
 import cats.effect.{Async, Clock, Concurrent, Sync, Timer}
 import cats.syntax.all._
 import io.github.oybek.gdetram.db.repository.JournalRepoAlg
-import io.github.oybek.gdetram.model.Platform.Vk
+import io.github.oybek.gdetram.domain.Platform.Vk
 import io.github.oybek.gdetram.service.CoreAlg
 import io.github.oybek.gdetram.util.Formatting._
 import io.github.oybek.gdetram.util.vk.api._

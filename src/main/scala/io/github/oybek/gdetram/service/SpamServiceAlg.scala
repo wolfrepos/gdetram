@@ -1,6 +1,6 @@
 package io.github.oybek.gdetram.service
 
-import io.github.oybek.gdetram.model.Platform
+import io.github.oybek.gdetram.domain.Platform
 
 trait SpamServiceAlg[F[_]] {
   // creates row in 'message' table

@@ -4,7 +4,7 @@ import cats.effect.Sync
 import cats.implicits._
 import cats.effect.syntax.all._
 import io.github.oybek.gdetram.db.repository.{MessageRepo, MessageRepoAlg}
-import io.github.oybek.gdetram.model.{Platform, SpamMessage}
+import io.github.oybek.gdetram.domain.{Platform, SpamMessage}
 
 class SpamService[F[_]: Sync](implicit messageRepo: MessageRepoAlg[F])
     extends SpamServiceAlg[F] {

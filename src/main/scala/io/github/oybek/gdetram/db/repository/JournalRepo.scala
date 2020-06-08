@@ -5,7 +5,7 @@ import java.sql.Timestamp
 import cats.effect.Sync
 import doobie.util.transactor.Transactor
 import doobie.util.update.Update0
-import io.github.oybek.gdetram.model.{Platform, Record}
+import io.github.oybek.gdetram.domain.{Platform, Record}
 import doobie._
 import doobie.implicits._
 import doobie.implicits.javasql._

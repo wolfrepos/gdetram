@@ -6,10 +6,10 @@ import cats.effect.concurrent.Ref
 import doobie.util.ExecutionContexts
 import io.github.oybek.gdetram.db.repository.{CityRepoAlg, JournalRepoAlg, StopRepoAlg, UserRepoAlg}
 import io.github.oybek.gdetram.donnars.StopDonnar
-import io.github.oybek.gdetram.model.Platform.Vk
+import io.github.oybek.gdetram.domain.Platform.Vk
 import io.github.oybek.plato.model.TransportT.{Bus, Tram, Troll}
 import io.github.oybek.plato.model.{Arrival, TransportT}
-import io.github.oybek.gdetram.model.{City, Platform, Stop, User}
+import io.github.oybek.gdetram.domain.{City, Platform, Stop, User}
 import io.github.oybek.gdetram.service.extractor.ExtractorAlg
 import io.github.oybek.gdetram.util.vk.Coord
 import org.scalamock.scalatest.MockFactory

@@ -3,7 +3,7 @@ package io.github.oybek.gdetram.db.repository
 import cats.effect.Sync
 import doobie.implicits._
 import doobie.util.transactor.Transactor
-import io.github.oybek.gdetram.model.City
+import io.github.oybek.gdetram.domain.City
 
 trait CityRepoAlg[F[_]] {
   def selectCity(query: String): F[(City, Int)]

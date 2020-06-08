@@ -2,7 +2,7 @@ package io.github.oybek.gdetram.db.repository
 
 import doobie.util.query.Query0
 import doobie.util.update.Update0
-import io.github.oybek.gdetram.model.{City, Platform, Record, SpamMessage, Stop, User}
+import io.github.oybek.gdetram.domain.{City, Platform, Record, SpamMessage, Stop, User}
 import doobie.implicits._
 import doobie.implicits.javasql._
 

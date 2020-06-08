@@ -5,7 +5,7 @@ import java.sql.Timestamp
 import cats.implicits._
 import cats.effect.{Timer, Concurrent, Sync}
 import io.github.oybek.gdetram.db.repository._
-import io.github.oybek.gdetram.model._
+import io.github.oybek.gdetram.domain._
 import io.github.oybek.gdetram.service.extractor.ExtractorAlg
 import io.github.oybek.gdetram.util.Formatting
 import io.github.oybek.gdetram.util.vk.Coord
