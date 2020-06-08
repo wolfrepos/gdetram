@@ -1,6 +1,8 @@
 # GDETRAM
 
-![master](https://github.com/oybek/gdetram/workflows/master/badge.svg)
+[![master](https://github.com/oybek/gdetram/workflows/master/badge.svg)](https://github.com/oybek/gdetram/actions)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=oybek_gdetram&metric=ncloc)](https://sonarcloud.io/dashboard?id=oybek_gdetram)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=oybek_gdetram&metric=coverage)](https://sonarcloud.io/dashboard?id=oybek_gdetram)
 
 Simple chat-bot which aggregates info about transport arrival time from many
 internet sources (sites, services) and provides this info in pretty format.
@@ -18,6 +20,6 @@ internet sources (sites, services) and provides this info in pretty format.
 
 ### Screenshots
 
-<img src="https://i.imgur.com/VMEynEs.jpg" width="320">|<img src="https://i.imgur.com/5Tub9cJ.jpg" width="320">
+<img src="https://i.imgur.com/VMEynEs.jpg" width="320"> <img src="https://i.imgur.com/5Tub9cJ.jpg" width="320">
 
 Built with [Telegramium](https://github.com/apimorphism/telegramium)

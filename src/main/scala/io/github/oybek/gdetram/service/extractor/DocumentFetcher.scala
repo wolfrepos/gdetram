@@ -16,17 +16,17 @@ class DocumentFetcher[F[_]: Sync: Clock] extends DocumentFetcherAlg[F] {
   private val cache: concurrent.Map[String, (Long, Document)] =
     new ConcurrentHashMap[String, (Long, Document)](1 << 12).asScala
 
-  def fetch(url: String): F[Option[Document]] =
+  def fetchCached(url: String): F[Option[Document]] =
     cache.get(url) match {
-      case None                                           => _fetch(url)
-      case Some((cachedTime, _)) if now - cachedTime > 30 => _fetch(url)
+      case None                                           => fetchUncached(url)
+      case Some((cachedTime, _)) if now - cachedTime > 30 => fetchUncached(url)
       case Some((_, document))                            =>
         Sync[F]
           .delay { log.info(s"$url is cached") }
           .as(Some(document))
     }
 
-  private def _fetch(url: String): F[Option[Document]] =
+  private def fetchUncached(url: String): F[Option[Document]] =
     for {
       fetchAttempt <- Sync[F].delay { Jsoup.connect(url).get() }.attempt
       document <- fetchAttempt match {

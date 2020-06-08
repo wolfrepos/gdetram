@@ -11,7 +11,7 @@ class Source1[F[_]: Sync: Clock](
 ) extends ExtractorAlg[F] {
 
   override def extractInfo(stop: Stop): F[List[(String, List[Arrival])]] =
-    documentFetcher.fetch(stop.url).map { doc =>
+    documentFetcher.fetchCached(stop.url).map { doc =>
       doc.map(Parser001.parse).getOrElse(List())
     }
 }
