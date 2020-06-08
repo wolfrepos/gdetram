@@ -27,8 +27,8 @@ object Chart extends Charting {
     val cityMetricsSorted = cityMetrics.sortBy(_.dateWhen)(Ordering[Timestamp]).takeRight(n)
     val xs = cityMetricsSorted.map(_.dateWhen)
     val ys = List(
-      "Пассивных" -> cityMetricsSorted.map(_.passive),
       "Активных" -> cityMetricsSorted.map(_.active),
+      "Пассивных" -> cityMetricsSorted.map(_.passive),
     )
     val fileName = cityMetricsSorted.hashCode().toString + ".png"
     Chart.genCategoryChart(xs, ys)(fileName)
