@@ -39,11 +39,10 @@ object Main extends IOApp {
             implicit val client           : Client[F]             = Logger(logHeaders = false, logBody = false)(httpClient)
             implicit val cityRepo         : CityRepoAlg[F]        = new CityRepo[F](transactor)
             implicit val journalRepo      : JournalRepoAlg[F]     = new JournalRepo(transactor)
-            implicit val messageRepo      : MessageRepoAlg[F]     = new MessageRepo[F](transactor)
             implicit val stopRepo         : StopRepoAlg[F]        = new StopRepo(transactor)
             implicit val userRepo         : UserRepoAlg[F]        = new UserRepo[F](transactor)
-            implicit val documentFetcher  : DocFetcherAlg[F] = new DocFetcher[F]
-            implicit val PsService        : PsServiceAlg[F]       = new PsService[F]
+            implicit val documentFetcher  : DocFetcherAlg[F]      = new DocFetcher[F]
+            implicit val PsService        : PsServiceAlg[F]       = new PsService[F](transactor)
             implicit val vkBotApi         : VkApi[F]              = new VkApiHttp4s[F](client)
             implicit val tgBotApi         : Api[F]                = new ApiHttp4sImp[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}")
             implicit val source1          : TabloidAlg[F]         = new TabloidA[F]

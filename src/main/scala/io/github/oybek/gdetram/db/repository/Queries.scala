@@ -74,8 +74,8 @@ object Queries {
     sql"insert into journal values ($stopId, $time, $userId, $text, $platform)".update
   }
 
-  def insertMessageSql(message: PsMessage): Update0 =
-    sql"insert into message(text) values (${message.text})".update
+  def insertMessageSql(message: String): Update0 =
+    sql"insert into message(text) values ($message)".update
 
   def getNotDeliveredMessageForSql(
     user: (Platform, Long)
