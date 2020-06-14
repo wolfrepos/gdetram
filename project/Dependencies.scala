@@ -71,6 +71,12 @@ object Dependencies {
     "org.scalatest" %% "scalatest" % V.mockTest % Test
   )
 
+  val testContainers = Seq(
+    "com.dimafeng" %% "testcontainers-scala-core" % "0.37.0" % "test",
+    "com.dimafeng" %% "testcontainers-scala-scalatest" % "0.37.0" % "test",
+    "com.dimafeng" %% "testcontainers-scala-postgresql" % "0.37.0" % "test"
+  )
+
   val common = Seq(catsCore, catsEffect, scalaTest, pureConfig, flyway, jsoup, scalaChart) ++
     telegramium ++
     circe ++
@@ -78,5 +84,6 @@ object Dependencies {
     logger ++
     uPickle ++
     doobie ++
-    mock
+    mock ++
+    testContainers
 }

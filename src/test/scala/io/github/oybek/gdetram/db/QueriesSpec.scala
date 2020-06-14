@@ -1,15 +1,42 @@
 package io.github.oybek.gdetram.db
 
-import java.sql.Timestamp
+import java.sql.{DriverManager, Timestamp}
 
+import cats.effect.IO
+import com.dimafeng.testcontainers.{ForAllTestContainer, PostgreSQLContainer}
 import doobie.scalatest.IOChecker
+import doobie.util.ExecutionContexts
+import doobie.util.transactor.Transactor
 import io.github.oybek.gdetram.db.repository.{JournalRepo, Queries, UserRepo}
 import io.github.oybek.gdetram.domain.model.Platform.{Tg, Vk}
 import io.github.oybek.gdetram.domain.model
 import io.github.oybek.gdetram.domain.model.{PsMessage, Record}
+import org.flywaydb.core.Flyway
 import org.scalatest.{FunSuite, Matchers}
 
-class QueriesSpec extends FunSuite with Matchers with IOChecker with TestTx {
+class QueriesSpec extends FunSuite with IOChecker with ForAllTestContainer {
+
+  override val container = PostgreSQLContainer()
+  implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
+
+  override def afterStart(): Unit = {
+    val flyway = Flyway
+      .configure()
+      .dataSource(container.jdbcUrl, container.username, container.password)
+      .load()
+    flyway.clean()
+    flyway.migrate()
+  }
+
+  lazy val transactor = {
+    Transactor
+      .fromDriverManager[IO](
+        container.driverClassName,
+        container.jdbcUrl,
+        container.username,
+        container.password
+      )
+  }
 
   test("user repo queries") {
     check(UserRepo.selectCityUserCount)
@@ -48,7 +75,7 @@ class QueriesSpec extends FunSuite with Matchers with IOChecker with TestTx {
   }
 
   test("Insert message") {
-    check(Queries.insertMessageSql(PsMessage(text = "hello")))
+    check(Queries.insertMessageSql("hello"))
   }
 
   test("Select not delivered message") {
