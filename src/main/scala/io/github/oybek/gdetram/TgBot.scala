@@ -75,7 +75,7 @@ class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
         Sync[F].unit
     })
 
-  private def sendMessage(chatId: Int,
+  def sendMessage(chatId: Int,
                           text: String,
                           keyboardOpt: Option[KeyboardMarkup] = None): F[Unit] = {
     val sendMessageReq =

@@ -74,25 +74,15 @@ object Queries {
     sql"insert into journal values ($stopId, $time, $userId, $text, $platform)".update
   }
 
-  def insertMessageSql(message: String): Update0 =
-    sql"insert into message(text) values ($message)".update
+  def getAsyncMessageFor(user: (Platform, Long)): Query0[String] =
+    sql"select text from async_message where platform = ${user._1} and id = ${user._2}".query[String]
 
-  def getNotDeliveredMessageForSql(
-    user: (Platform, Long)
-  ): Query0[PsMessage] =
-    sql"""
-         |select id, text from message where
-         |  not exists(
-         |    select 1 from delivered where message_id = id and user_id = ${user._2.toString} and platform = ${user._1}
-         |  )
-         |""".stripMargin.query[PsMessage]
+  def delAsyncMessageFor(user: (Platform, Long)): Update0 =
+    sql"delete from async_message where platform = ${user._1} and id = ${user._2}".update
 
-  def markDeliveredForUserSql(messageId: Int,
-                              forUser: (Platform, Long)): Update0 =
-    sql"insert into delivered(message_id, user_id, platform) values($messageId, ${forUser._2.toString}, ${forUser._1})".update
+  def getSyncMessage: Query0[(Platform, Long, String)] =
+    sql"select platform, id, text from sync_message limit 1".query[(Platform, Long, String)]
 
-  def uniqueUsersSql: Query0[(Platform, Int)] = {
-    sql"select platform, count(distinct(user_id)) from journal group by platform"
-      .query[(Platform, Int)]
-  }
+  def delSyncMessageFor(user: (Platform, Long)): Update0 =
+    sql"delete from sync_message where platform = ${user._1} and id = ${user._2}".update
 }

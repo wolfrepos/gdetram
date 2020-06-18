@@ -10,7 +10,6 @@ import io.github.oybek.gdetram.domain.model.{City, Platform, User}
 
 trait UserRepoAlg[F[_]] {
   def upsert(user: User): F[Int]
-  def uniqueUsers: F[List[(Platform, Int)]]
   def selectUser(platform: Platform, userId: Int): F[Option[User]]
   def selectPlatformUserCount: F[Map[Platform, Int]]
   def selectCityUserCount: F[Map[City, Long]]
@@ -37,9 +36,6 @@ class UserRepo[F[_]: Sync](transactor: Transactor[F]) extends UserRepoAlg[F] {
       .upsertUserCity(user.platform, user.id, user.city.id)
       .run
       .transact(transactor)
-
-  def uniqueUsers: F[List[(Platform, Int)]] =
-    Queries.uniqueUsersSql.to[List].transact(transactor)
 
   def selectUser(platform: Platform, userId: Int): F[Option[User]] =
     Queries.selectUser(platform, userId).option.transact(transactor)

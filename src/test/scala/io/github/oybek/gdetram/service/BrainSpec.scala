@@ -22,7 +22,7 @@ class BrainSpec extends FlatSpec with Matchers with MockFactory with StopDonnar 
   implicit val tm = IO.timer(ExecutionContexts.synchronous)
 
   implicit val journalRepo = stub[JournalRepoAlg[IO]]
-  implicit val PSService = stub[PsServiceAlg[IO]]
+  implicit val PSService = stub[MessageRepoAlg[IO]]
   implicit val stopRepo = stub[StopRepoAlg[IO]]
   implicit val extractor = stub[TabloidAlg[IO]]
   implicit val cityRepo = stub[CityRepoAlg[IO]]
@@ -49,7 +49,7 @@ class BrainSpec extends FlatSpec with Matchers with MockFactory with StopDonnar 
       .when(*)
       .returns(IO { 1 })
 
-    (PSService.getNotDeliveredMessageFor _)
+    (PSService.pollAsyncMessage _)
       .when(*)
       .returns(IO { None })
 
@@ -68,7 +68,7 @@ class BrainSpec extends FlatSpec with Matchers with MockFactory with StopDonnar 
   "when geo is got" must "find nearest stops and update cache" in {
     val user = Vk -> 123L
 
-    (PSService.getNotDeliveredMessageFor _)
+    (PSService.pollAsyncMessage _)
       .when(*)
       .returns(IO { None })
 

@@ -24,6 +24,17 @@ object TimeTools {
       } yield ()
     }
 
+    def every(finiteDuration: FiniteDuration, count: Int): F[Unit] =
+      if (count <= 0) {
+        Sync[F].unit
+      } else {
+        for {
+          _ <- ff
+          _ <- Timer[F].sleep(finiteDuration)
+          _ <- every(finiteDuration, count-1)
+        } yield ()
+      }
+
     private def every(finiteDuration: FiniteDuration): F[Unit] =
       for {
         _ <- ff
