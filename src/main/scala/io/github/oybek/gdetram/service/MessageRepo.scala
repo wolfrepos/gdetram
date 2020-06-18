@@ -17,15 +17,15 @@ class MessageRepo[F[_]: Sync](tx: Transactor[F]) extends MessageRepoAlg[F] {
   override def pollAsyncMessage(user: (Platform, Long)): F[Option[String]] = (
     for {
       msgOpt <- Queries.getAsyncMessageFor(user).option
-      _ <- msgOpt.traverse(_ => Queries.delAsyncMessageFor(user).run)
+      _ <- msgOpt.traverse(text => Queries.delAsyncMessageFor(user, text).run)
     } yield msgOpt
   ).transact(tx)
 
   override def pollSyncMessage: F[Option[(Platform, Long, String)]] = (
     for {
       msgOpt <- Queries.getSyncMessage.option
-      _ <- msgOpt.traverse { case (platform, id, _) =>
-        Queries.delSyncMessageFor((platform, id)).run
+      _ <- msgOpt.traverse { case (platform, id, text) =>
+        Queries.delSyncMessageFor((platform, id), text).run
       }
     } yield msgOpt
   ).transact(tx)

@@ -75,14 +75,14 @@ object Queries {
   }
 
   def getAsyncMessageFor(user: (Platform, Long)): Query0[String] =
-    sql"select text from async_message where platform = ${user._1} and id = ${user._2}".query[String]
+    sql"select text from async_message where platform = ${user._1} and id = ${user._2} limit 1".query[String]
 
-  def delAsyncMessageFor(user: (Platform, Long)): Update0 =
-    sql"delete from async_message where platform = ${user._1} and id = ${user._2}".update
+  def delAsyncMessageFor(user: (Platform, Long), text: String): Update0 =
+    sql"delete from async_message where platform = ${user._1} and id = ${user._2} and text = $text".update
 
   def getSyncMessage: Query0[(Platform, Long, String)] =
     sql"select platform, id, text from sync_message limit 1".query[(Platform, Long, String)]
 
-  def delSyncMessageFor(user: (Platform, Long)): Update0 =
-    sql"delete from sync_message where platform = ${user._1} and id = ${user._2}".update
+  def delSyncMessageFor(user: (Platform, Long), text: String): Update0 =
+    sql"delete from sync_message where platform = ${user._1} and id = ${user._2} and text = $text".update
 }

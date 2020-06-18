@@ -77,7 +77,7 @@ class QueriesSpec extends FunSuite with IOChecker with ForAllTestContainer {
   test("Message queries") {
     check(Queries.getAsyncMessageFor((Vk, 123)))
     check(Queries.getSyncMessage)
-    check(Queries.delSyncMessageFor((Vk, 123)))
-    check(Queries.delAsyncMessageFor((Vk, 123)))
+    check(Queries.delSyncMessageFor((Vk, 123), "hello"))
+    check(Queries.delAsyncMessageFor((Vk, 123), "hello"))
   }
 }
