@@ -69,7 +69,7 @@ object Main extends IOApp {
                   case Some((Vk, id, text)) => vkBot.sendMessage(id, text)
                   case Some((Tg, id, text)) => tgBot.sendMessage(id.toInt, text)
                   case _ => Sync[F].unit
-                }.every(1.minute, 9*60).everyDayAt(9, 0)
+                }.every(30.seconds, 9*60*2).everyDayAt(7, 0)
 
               _ <- f1.join
               _ <- f2.join
