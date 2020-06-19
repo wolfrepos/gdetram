@@ -67,7 +67,7 @@ object Main extends IOApp {
                 .pollSyncMessage
                 .flatMap {
                   case Some((Vk, id, text)) => vkBot.sendMessage(id, text)
-                  case Some((Tg, id, text)) => vkBot.sendMessage(id, text)
+                  case Some((Tg, id, text)) => tgBot.sendMessage(id.toInt, text)
                   case _ => Sync[F].unit
                 }.every(1.minute, 9*60).everyDayAt(9, 0)
 
