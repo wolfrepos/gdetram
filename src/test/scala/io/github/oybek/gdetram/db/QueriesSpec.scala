@@ -74,15 +74,10 @@ class QueriesSpec extends FunSuite with IOChecker with ForAllTestContainer {
     check(Queries.selectNearest(0.0f, 0.0f))
   }
 
-  test("Insert message") {
-    check(Queries.insertMessageSql("hello"))
-  }
-
-  test("Select not delivered message") {
-    check(Queries.getNotDeliveredMessageForSql((Vk, 123)))
-  }
-
-  test("Insert to table delivered") {
-    check(Queries.markDeliveredForUserSql(123, (Vk, 123)))
+  test("Message queries") {
+    check(Queries.getAsyncMessageFor((Vk, 123)))
+    check(Queries.getSyncMessage)
+    check(Queries.delSyncMessageFor((Vk, 123), "hello"))
+    check(Queries.delAsyncMessageFor((Vk, 123), "hello"))
   }
 }

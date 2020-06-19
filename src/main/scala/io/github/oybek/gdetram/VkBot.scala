@@ -52,7 +52,7 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
   override def onWallReplyNew(wallReplyNew: WallReplyNew): F[Unit] =
     Sync[F].unit
 
-  private def sendMessage(to: Long,
+  def sendMessage(to: Long,
                           text: String,
                           attachment: Option[String] = None,
                           keyboard: Option[Keyboard] = None): F[Unit] = {

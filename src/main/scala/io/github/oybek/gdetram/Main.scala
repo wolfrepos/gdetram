@@ -2,11 +2,14 @@ package io.github.oybek.gdetram
 
 import java.util.concurrent.TimeUnit
 
+import cats.syntax.all._
+import cats.instances.option._
 import cats.effect.{ExitCode, IO, IOApp, Resource, Sync}
 import doobie.hikari.HikariTransactor
 import io.github.oybek.gdetram.config.Config
 import io.github.oybek.gdetram.db.DB
 import io.github.oybek.gdetram.db.repository._
+import io.github.oybek.gdetram.domain.model.Platform.{Tg, Vk}
 import io.github.oybek.gdetram.domain.{Brain, BrainAlg}
 import io.github.oybek.gdetram.service.{DocFetcherAlg, TabloidA}
 import io.github.oybek.gdetram.service._
@@ -20,6 +23,7 @@ import telegramium.bots.client.{Api, ApiHttp4sImp}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration._
 
 object Main extends IOApp {
   type F[+T] = IO[T]
@@ -42,11 +46,11 @@ object Main extends IOApp {
             implicit val stopRepo         : StopRepoAlg[F]        = new StopRepo(transactor)
             implicit val userRepo         : UserRepoAlg[F]        = new UserRepo[F](transactor)
             implicit val documentFetcher  : DocFetcherAlg[F]      = new DocFetcher[F]
-            implicit val PsService        : PsServiceAlg[F]       = new PsService[F](transactor)
+            implicit val messageRepo      : MessageRepoAlg[F]     = new MessageRepo[F](transactor)
             implicit val vkBotApi         : VkApi[F]              = new VkApiHttp4s[F](client)
             implicit val tgBotApi         : Api[F]                = new ApiHttp4sImp[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}")
             implicit val source1          : TabloidAlg[F]         = new TabloidA[F]
-            implicit val core             : BrainAlg[F]            = new Brain[F]
+            implicit val core             : BrainAlg[F]           = new Brain[F]
             implicit val metricService    : MetricServiceAlg[F]   = new MetricService[F]()
 
             val vkBot = new VkBot[F](config.getLongPollServerReq)
@@ -56,8 +60,17 @@ object Main extends IOApp {
               _ <- DB.initialize(transactor)
               f1 <- vkBot.start.start
               f2 <- tgBot.start.start
+
               _ <- tgBot.dailyReports().everyDayAt( 9, 30).start
               _ <- tgBot.dailyMetricsDump.everyDayAt(23, 59).start
+              _ <- messageRepo
+                .pollSyncMessage
+                .flatMap {
+                  case Some((Vk, id, text)) => vkBot.sendMessage(id, text)
+                  case Some((Tg, id, text)) => tgBot.sendMessage(id.toInt, text)
+                  case _ => Sync[F].unit
+                }.every(30.seconds, 9*60*2).everyDayAt(7, 0)
+
               _ <- f1.join
               _ <- f2.join
             } yield ()

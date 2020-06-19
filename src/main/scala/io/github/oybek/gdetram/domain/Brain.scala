@@ -6,7 +6,7 @@ import cats.effect.{Concurrent, Sync, Timer}
 import cats.implicits._
 import io.github.oybek.gdetram.db.repository._
 import io.github.oybek.gdetram.domain.model.{Button, GeoButton, LinkButton, Platform, Record, Stop, TextButton, User}
-import io.github.oybek.gdetram.service.{TabloidAlg, PsServiceAlg}
+import io.github.oybek.gdetram.service.{TabloidAlg, MessageRepoAlg}
 import io.github.oybek.gdetram.util.Formatting
 import io.github.oybek.gdetram.util.vk.Coord
 
@@ -21,7 +21,7 @@ class Brain[F[_]: Sync: Concurrent: Timer](implicit
                                            cityRepo: CityRepoAlg[F],
                                            tabloid: TabloidAlg[F],
                                            journalRepo: JournalRepoAlg[F],
-                                           psService: PsServiceAlg[F],
+                                           messageRepo: MessageRepoAlg[F],
                                            stopRepo: StopRepoAlg[F],
                                            userRepo: UserRepoAlg[F])
     extends BrainAlg[F] {
@@ -83,7 +83,7 @@ class Brain[F[_]: Sync: Concurrent: Timer](implicit
               tabloidText <- getTabloid(stop)
               currentMillis <- Timer[F].clock.realTime(scala.concurrent.duration.MILLISECONDS)
               _ <- journalRepo.insert(Record(stop.id, new Timestamp(currentMillis), stateKey._2.toString, text, stateKey._1))
-              psText <- psService.getNotDeliveredMessageFor(stateKey)
+              psText <- messageRepo.pollAsyncMessage(stateKey)
               res = tabloidText + psText.map("\n" + _).getOrElse("")
             } yield res -> defaultKeyboard(
               TextButton("город " + user.city.name),
