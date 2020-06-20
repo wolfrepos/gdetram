@@ -24,16 +24,22 @@ object TimeTools {
       } yield ()
     }
 
-    def every(finiteDuration: FiniteDuration, count: Int): F[Unit] =
-      if (count <= 0) {
-        Sync[F].unit
-      } else {
-        for {
-          _ <- ff
-          _ <- Timer[F].sleep(finiteDuration)
-          _ <- every(finiteDuration, count-1)
-        } yield ()
-      }
+    def every(finiteDuration: FiniteDuration, fromTo: (Int, Int)): F[Unit] =
+      for {
+        _ <- ff
+        now <- Sync[F].delay { LocalDateTime.now }
+        curHour = now.getHour
+        _ <- Timer[F].sleep(
+          if (curHour >= fromTo._1 && curHour <= fromTo._2)
+            finiteDuration
+          else
+            now.until(
+              now.plusDays(1).withHour(fromTo._1),
+              ChronoUnit.SECONDS
+            ).seconds
+        )
+        _ <- every(finiteDuration, fromTo)
+      } yield ()
 
     private def every(finiteDuration: FiniteDuration): F[Unit] =
       for {

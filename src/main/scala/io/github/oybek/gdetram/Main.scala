@@ -65,11 +65,12 @@ object Main extends IOApp {
               _ <- tgBot.dailyMetricsDump.everyDayAt(23, 59).start
               _ <- messageRepo
                 .pollSyncMessage
+                .flatTap(x => Sync[F].delay(log.info(s"sync_message: $x")))
                 .flatMap {
                   case Some((Vk, id, text)) => vkBot.sendMessage(id, text)
                   case Some((Tg, id, text)) => tgBot.sendMessage(id.toInt, text)
                   case _ => Sync[F].unit
-                }.every(30.seconds, 9*60*2).everyDayAt(7, 0)
+                }.every(30.seconds, (7, 17))
 
               _ <- f1.join
               _ <- f2.join

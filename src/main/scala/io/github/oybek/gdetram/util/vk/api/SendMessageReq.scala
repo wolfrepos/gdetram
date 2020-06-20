@@ -30,10 +30,10 @@ case class SendMessageReq(peerId: Long,
         "random_id" -> Some(randomId.toString),
         "message" -> Some(message),
         "attachment" -> attachment,
-        "keyboard" -> Some(
+        "keyboard" -> keyboard.map(x =>
           Printer.noSpaces
             .copy(dropNullValues = true)
-            .print(keyboard.asJson)
+            .print(x.asJson)
         )
       ).collect { case (k, Some(v)) => k -> v }
         .map {
