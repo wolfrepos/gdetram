@@ -67,8 +67,8 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
     )
     for {
       time <- Clock[F].realTime(MILLISECONDS)
-      _ <- vkApi.sendMessage(sendMessageReq.copy(randomId = time)).void
-      _ <- Sync[F].delay { log.info(s"send message: $sendMessageReq") }
+      resp <- vkApi.sendMessage(sendMessageReq.copy(randomId = time))
+      _ <- Sync[F].delay { log.info(s"send message: $sendMessageReq, got resp $resp") }
     } yield ()
   }
 }
