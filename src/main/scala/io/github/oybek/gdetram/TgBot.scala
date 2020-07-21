@@ -10,7 +10,7 @@ import io.github.oybek.gdetram.domain.BrainAlg
 import io.github.oybek.gdetram.domain.model.Platform.Tg
 import io.github.oybek.gdetram.service.MetricServiceAlg
 import io.github.oybek.gdetram.util.TgExtractors
-import io.github.oybek.gdetram.util.vk.Coord
+import io.github.oybek.vk4s.domain.Coord
 import org.slf4j.{Logger, LoggerFactory}
 import telegramium.bots.client.Api
 import telegramium.bots.high.LongPollBot

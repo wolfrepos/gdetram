@@ -14,7 +14,7 @@ import io.github.oybek.gdetram.domain.{Brain, BrainAlg}
 import io.github.oybek.gdetram.service.{DocFetcherAlg, TabloidA}
 import io.github.oybek.gdetram.service._
 import io.github.oybek.gdetram.util.TimeTools._
-import io.github.oybek.gdetram.util.vk.api.{VkApi, VkApiHttp4s}
+import io.github.oybek.vk4s.api.{VkApi, VkApiHttp4s}
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.middleware.Logger

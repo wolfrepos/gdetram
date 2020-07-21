@@ -1,6 +1,6 @@
 package io.github.oybek.gdetram.domain.model
 
-import io.github.oybek.gdetram.util.vk.api.{Action, Keyboard, Button => VkButton}
+import io.github.oybek.vk4s.model.{Action, Keyboard, Button => VkButton}
 import telegramium.bots.{InlineKeyboardButton, InlineKeyboardMarkup, MarkupInlineKeyboard}
 
 sealed trait Button

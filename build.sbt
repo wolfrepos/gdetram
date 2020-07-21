@@ -9,8 +9,10 @@ lazy val plato = ProjectRef(
   "plato"
 )
 
+lazy val vk4s = RootProject(uri("git://github.com/oybek/vk4s.git"))
+
 lazy val gdetram = (project in file("."))
   .settings(name := "gdetram")
   .settings(libraryDependencies ++= Dependencies.common)
   .settings(sonarProperties := Sonar.properties)
-  .dependsOn(plato)
+  .dependsOn(plato, vk4s)

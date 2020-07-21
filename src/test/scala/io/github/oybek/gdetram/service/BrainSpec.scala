@@ -11,7 +11,6 @@ import io.github.oybek.gdetram.domain.model.{City, Stop, User}
 import io.github.oybek.plato.model.TransportT.{Bus, Tram, Troll}
 import io.github.oybek.plato.model.{Arrival, TransportT}
 import io.github.oybek.gdetram.domain.Brain
-import io.github.oybek.gdetram.util.vk.Coord
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{FlatSpec, Matchers}
 

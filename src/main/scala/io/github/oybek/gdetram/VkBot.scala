@@ -8,8 +8,9 @@ import io.github.oybek.gdetram.db.repository.JournalRepoAlg
 import io.github.oybek.gdetram.domain.BrainAlg
 import io.github.oybek.gdetram.domain.model.Platform.Vk
 import io.github.oybek.gdetram.util.Formatting._
-import io.github.oybek.gdetram.util.vk.api._
-import io.github.oybek.gdetram.util.vk._
+import io.github.oybek.vk4s.api._
+import io.github.oybek.vk4s.domain.{Geo, LongPollBot, MessageNew, WallPostNew, WallReplyNew}
+import io.github.oybek.vk4s.model.{GetLongPollServerReq, Keyboard, SendMessageReq}
 import org.http4s.client.Client
 import org.slf4j.{Logger, LoggerFactory}
 

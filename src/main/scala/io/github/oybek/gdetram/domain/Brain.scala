@@ -6,9 +6,9 @@ import cats.effect.{Concurrent, Sync, Timer}
 import cats.implicits._
 import io.github.oybek.gdetram.db.repository._
 import io.github.oybek.gdetram.domain.model.{Button, GeoButton, LinkButton, Platform, Record, Stop, TextButton, User}
-import io.github.oybek.gdetram.service.{TabloidAlg, MessageRepoAlg}
+import io.github.oybek.gdetram.service.{MessageRepoAlg, TabloidAlg}
 import io.github.oybek.gdetram.util.Formatting
-import io.github.oybek.gdetram.util.vk.Coord
+import io.github.oybek.vk4s.domain.Coord
 
 trait BrainAlg[F[_]] {
   def handleText(stateKey: (Platform, Long),
