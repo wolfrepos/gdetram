@@ -48,11 +48,6 @@ object Dependencies {
     "org.http4s" %% "http4s-blaze-client" % V.http4s
   )
 
-  val logger = Seq(
-    "org.slf4j" % "slf4j-api" % V.slf4j,
-    "ch.qos.logback" % "logback-classic" % V.logback
-  )
-
   val telegramium = Seq(
     "io.github.apimorphism" %% "telegramium-core" % V.telegramium,
     "io.github.apimorphism" %% "telegramium-high" % V.telegramium
@@ -73,7 +68,6 @@ object Dependencies {
     telegramium ++
     circe ++
     http4s ++
-    logger ++
     doobie ++
     mock ++
     testContainers

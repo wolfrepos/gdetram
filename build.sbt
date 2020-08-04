@@ -15,3 +15,8 @@ lazy val gdetram = (project in file("."))
   .settings(sonarProperties := Sonar.properties)
   .settings(Compiler.settings)
   .dependsOn(plato, vk4s)
+
+assemblyMergeStrategy in assembly := {
+  case PathList("org", "slf4j", xs@_*) => MergeStrategy.first
+  case x => (assemblyMergeStrategy in assembly).value(x)
+}
