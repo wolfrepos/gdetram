@@ -12,11 +12,12 @@ import io.github.oybek.plato.model.TransportT.{Bus, Tram, Troll}
 import io.github.oybek.plato.model.{Arrival, TransportT}
 import io.github.oybek.gdetram.domain.Brain
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.duration._
 
-class BrainSpec extends FlatSpec with Matchers with MockFactory with StopDonnar {
+class BrainSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonnar {
   implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
   implicit val tm = IO.timer(ExecutionContexts.synchronous)
 

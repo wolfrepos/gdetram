@@ -5,12 +5,13 @@ import io.github.oybek.gdetram.domain.model.Stop
 import io.github.oybek.gdetram.donnars.StopDonnar
 import io.github.oybek.plato.model.{Arrival, TransportT}
 import io.github.oybek.plato.model.TransportT.{Bus, Tram}
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.duration._
 
 class FormattingSpec
-    extends FlatSpec
+    extends AnyFlatSpec
     with Matchers
     with TgExtractors
     with StopDonnar {
