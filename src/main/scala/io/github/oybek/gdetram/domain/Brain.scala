@@ -135,14 +135,5 @@ class Brain[F[_]: Sync: Concurrent: Timer](implicit
   }
 
   private def defaultKeyboard(topButton: Button*): List[List[Button]] =
-    List(
-      topButton.toList,
-      List(
-        LinkButton(
-          "Вызвать Яндекс.Такси",
-          "https://3.redirect.appmetrica.yandex.com/route?ref=2373965&amp;appmetrica_tracking_id=25395763362139037"
-        )
-      ),
-      List(GeoButton)
-    )
+    List(topButton.toList, List(GeoButton))
 }
