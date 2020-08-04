@@ -8,7 +8,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.slf4j.LoggerFactory
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection._
 
 trait DocFetcherAlg[F[_]] {

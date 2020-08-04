@@ -1,7 +1,7 @@
 package io.github.oybek.gdetram.domain.model
 
 import io.github.oybek.vk4s.model.{Action, Keyboard, Button => VkButton}
-import telegramium.bots.{InlineKeyboardButton, InlineKeyboardMarkup, MarkupInlineKeyboard}
+import telegramium.bots.{InlineKeyboardButton, InlineKeyboardMarkup}
 
 sealed trait Button
 case class TextButton(text: String) extends Button
@@ -38,8 +38,8 @@ object Button {
         button.filter(_.nonEmpty).map(_.map(_.toVk))
       )
 
-    def toTg: MarkupInlineKeyboard =
-      MarkupInlineKeyboard(InlineKeyboardMarkup(button.map(_.flatMap(_.toTg))))
+    def toTg: InlineKeyboardMarkup =
+      InlineKeyboardMarkup(button.map(_.flatMap(_.toTg)))
   }
 
 }

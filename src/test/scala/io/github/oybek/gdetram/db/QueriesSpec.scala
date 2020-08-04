@@ -12,9 +12,9 @@ import io.github.oybek.gdetram.domain.model.Platform.{Tg, Vk}
 import io.github.oybek.gdetram.domain.model
 import io.github.oybek.gdetram.domain.model.{PsMessage, Record}
 import org.flywaydb.core.Flyway
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
 
-class QueriesSpec extends FunSuite with IOChecker with ForAllTestContainer {
+class QueriesSpec extends AnyFunSuite with IOChecker with ForAllTestContainer {
 
   override val container = PostgreSQLContainer()
   implicit val cs = IO.contextShift(ExecutionContexts.synchronous)

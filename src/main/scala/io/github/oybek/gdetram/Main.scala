@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit
 
 import cats.syntax.all._
 import cats.instances.option._
-import cats.effect.{ExitCode, IO, IOApp, Resource, Sync}
+import cats.effect.{Blocker, ExitCode, IO, IOApp, Resource, Sync}
 import doobie.hikari.HikariTransactor
 import io.github.oybek.gdetram.config.Config
 import io.github.oybek.gdetram.db.DB
@@ -19,7 +19,7 @@ import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.middleware.Logger
 import org.slf4j.LoggerFactory
-import telegramium.bots.client.{Api, ApiHttp4sImp}
+import telegramium.bots.high.{Api, BotApi}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.FiniteDuration
@@ -39,7 +39,7 @@ object Main extends IOApp {
       _ <- Sync[F].delay { log.info(s"loaded config: $config") }
       _ <- resources(config)
         .use {
-          case (transactor, httpClient) =>
+          case (transactor, httpClient, blocker) =>
             implicit val client           : Client[F]             = Logger(logHeaders = false, logBody = false)(httpClient)
             implicit val cityRepo         : CityRepoAlg[F]        = new CityRepo[F](transactor)
             implicit val journalRepo      : JournalRepoAlg[F]     = new JournalRepo(transactor)
@@ -48,7 +48,7 @@ object Main extends IOApp {
             implicit val documentFetcher  : DocFetcherAlg[F]      = new DocFetcher[F]
             implicit val messageRepo      : MessageRepoAlg[F]     = new MessageRepo[F](transactor)
             implicit val vkBotApi         : VkApi[F]              = new VkApiHttp4s[F](client)
-            implicit val tgBotApi         : Api[F]                = new ApiHttp4sImp[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}")
+            implicit val tgBotApi         : Api[F]                = new BotApi[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}", blocker)
             implicit val source1          : TabloidAlg[F]         = new TabloidA[F]
             implicit val core             : BrainAlg[F]           = new Brain[F]
             implicit val metricService    : MetricServiceAlg[F]   = new MetricService[F]()
@@ -68,7 +68,7 @@ object Main extends IOApp {
                 .flatTap(x => Sync[F].delay(log.info(s"sync_message: $x")))
                 .flatMap {
                   case Some((Vk, id, text)) => vkBot.sendMessage(id, text)
-                  case Some((Tg, id, text)) => tgBot.sendMessage(id.toInt, text)
+                  case Some((Tg, id, text)) => tgBot.send(id.toInt, text)
                   case _ => Sync[F].unit
                 }.every(30.seconds, (7, 17))
 
@@ -80,12 +80,13 @@ object Main extends IOApp {
 
   private def resources(
     config: Config
-  ): Resource[F, (HikariTransactor[F], Client[F])] = {
+  ): Resource[F, (HikariTransactor[F], Client[F], Blocker)] = {
     for {
       transactor <- DB.transactor[F](config.database)
       httpClient <- BlazeClientBuilder[F](global)
         .withResponseHeaderTimeout(FiniteDuration(60, TimeUnit.SECONDS))
         .resource
-    } yield (transactor, httpClient)
+      blocker <- Blocker[F]
+    } yield (transactor, httpClient, blocker)
   }
 }

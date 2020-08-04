@@ -27,9 +27,9 @@ package object config {
       Sync[F]
         .delay {
           configFileName
-            .map(x => loadConfig[Config](ConfigFactory.parseFile(new File(x))))
+            .map(x => ConfigSource.fromConfig(ConfigFactory.parseFile(new File(x))).load[Config])
             .getOrElse(
-              loadConfig[Config](ConfigFactory.load("application.conf"))
+              ConfigSource.fromConfig(ConfigFactory.load("application.conf")).load[Config]
             )
         }
         .flatMap {

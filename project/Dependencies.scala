@@ -5,20 +5,18 @@ object Dependencies {
   object V {
     val catsCore = "2.0.0"
     val catsEffect = "2.0.0"
-    val circe = "0.12.1"
-    val scalaTest = "3.0.5"
-    val http4s = "0.20.0"
+    val circe = "0.13.0"
+    val scalaTest = "3.2.0"
+    val http4s = "0.21.6"
     val slf4j = "1.7.26"
     val logback = "1.2.3"
-    val uPickle = "0.7.1"
-    val pureConfig = "0.10.2"
+    val pureConfig = "0.13.0"
     val flyway = "5.2.4"
     val doobie = "0.8.8"
     val jsoup = "1.7.2"
-    val telegramium = "1.0.0-RC1"
+    val telegramium = "2.49.0"
     val mock = "4.4.0"
     val mockTest = "3.1.0"
-    val scalaChart = "0.5.1"
   }
 
   val catsCore = "org.typelevel" %% "cats-core" % V.catsCore
@@ -27,7 +25,6 @@ object Dependencies {
   val pureConfig = "com.github.pureconfig" %% "pureconfig" % V.pureConfig
   val flyway = "org.flywaydb" % "flyway-core" % V.flyway
   val jsoup = "org.jsoup" % "jsoup" % V.jsoup
-  val scalaChart = "com.github.wookietreiber" %% "scala-chart" % V.scalaChart
 
   val doobie = Seq(
     "org.tpolecat" %% "doobie-core" % V.doobie,
@@ -51,16 +48,6 @@ object Dependencies {
     "org.http4s" %% "http4s-blaze-client" % V.http4s
   )
 
-  val logger = Seq(
-    "org.slf4j" % "slf4j-api" % V.slf4j,
-    "ch.qos.logback" % "logback-classic" % V.logback
-  )
-
-  val uPickle = Seq(
-    "com.lihaoyi" %% "upickle" % V.uPickle,
-    "com.lihaoyi" %% "upack" % V.uPickle
-  )
-
   val telegramium = Seq(
     "io.github.apimorphism" %% "telegramium-core" % V.telegramium,
     "io.github.apimorphism" %% "telegramium-high" % V.telegramium
@@ -77,12 +64,10 @@ object Dependencies {
     "com.dimafeng" %% "testcontainers-scala-postgresql" % "0.37.0" % "test"
   )
 
-  val common = Seq(catsCore, catsEffect, scalaTest, pureConfig, flyway, jsoup, scalaChart) ++
+  val common = Seq(catsCore, catsEffect, scalaTest, pureConfig, flyway, jsoup) ++
     telegramium ++
     circe ++
     http4s ++
-    logger ++
-    uPickle ++
     doobie ++
     mock ++
     testContainers
