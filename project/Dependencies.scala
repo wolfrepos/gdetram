@@ -3,11 +3,11 @@ import sbt._
 object Dependencies {
 
   object V {
-    val catsCore = "2.0.0"
-    val catsEffect = "2.0.0"
+    val catsCore = "2.1.1"
+    val catsEffect = "2.1.4"
     val circe = "0.13.0"
     val scalaTest = "3.2.0"
-    val http4s = "0.21.6"
+    val http4s = "0.21.7"
     val slf4j = "1.7.26"
     val logback = "1.2.3"
     val pureConfig = "0.13.0"
@@ -44,7 +44,6 @@ object Dependencies {
   val http4s = Seq(
     "org.http4s" %% "http4s-dsl" % V.http4s,
     "org.http4s" %% "http4s-circe" % V.http4s,
-    "org.http4s" %% "http4s-blaze-server" % V.http4s,
     "org.http4s" %% "http4s-blaze-client" % V.http4s
   )
 
