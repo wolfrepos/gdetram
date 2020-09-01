@@ -64,6 +64,7 @@ object Main extends IOApp {
 
               _ <- tgBot.dailyReports().everyDayAt( 9, 30).start
               _ <- tgBot.dailyMetricsDump.everyDayAt(23, 59).start
+
               _ <- messageRepo
                 .pollSyncMessage
                 .flatTap(x => Sync[F].delay(log.info(s"sync_message: $x")))
@@ -72,9 +73,9 @@ object Main extends IOApp {
                   case Some((Tg, id, text)) => tgBot.send(id.toInt, text)
                   case _ => Sync[F].unit
                 }.every(30.seconds, (7, 17)).start.void
+
               _ <- vkRevoke(vkBotApi, vkBot, config.getLongPollServerReq)
-                .every(10.seconds, (0, 24))
-                .start.void
+                .every(10.seconds, (9, 24)).start.void
 
               _ <- f1.join
               _ <- f2.join
@@ -97,7 +98,7 @@ object Main extends IOApp {
           accessToken = getLongPollServerReq.accessToken
         )
       )
-      _ <- getConversationsRes.items.map(_.conversation).traverse {
+      _ <- getConversationsRes.response.items.map(_.conversation).traverse {
         case Conversation(Peer(peerId, _, _), _) =>
           vkBot.sendMessage(peerId, "Прошу прощения за заминки, сейчас я снова работаю") *>
             Timer[F].sleep(2 seconds)
