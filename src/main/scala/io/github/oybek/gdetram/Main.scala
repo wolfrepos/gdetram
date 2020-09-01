@@ -3,8 +3,8 @@ package io.github.oybek.gdetram
 import java.util.concurrent.TimeUnit
 
 import cats.syntax.all._
-import cats.instances.option._
-import cats.effect.{Blocker, ExitCode, IO, IOApp, Resource, Sync}
+import cats.instances.list._
+import cats.effect.{Blocker, ExitCode, IO, IOApp, Resource, Sync, Timer}
 import doobie.hikari.HikariTransactor
 import io.github.oybek.gdetram.config.Config
 import io.github.oybek.gdetram.db.DB
@@ -14,7 +14,8 @@ import io.github.oybek.gdetram.domain.{Brain, BrainAlg}
 import io.github.oybek.gdetram.service.{DocFetcherAlg, TabloidA}
 import io.github.oybek.gdetram.service._
 import io.github.oybek.gdetram.util.TimeTools._
-import io.github.oybek.vk4s.api.{VkApi, VkApiHttp4s}
+import io.github.oybek.vk4s.api.{GetConversationsReq, GetLongPollServerReq, Unanswered, VkApi, VkApiHttp4s}
+import io.github.oybek.vk4s.domain.{Conversation, Peer}
 import org.http4s.client.Client
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.middleware.Logger
@@ -70,13 +71,38 @@ object Main extends IOApp {
                   case Some((Vk, id, text)) => vkBot.sendMessage(id, text)
                   case Some((Tg, id, text)) => tgBot.send(id.toInt, text)
                   case _ => Sync[F].unit
-                }.every(30.seconds, (7, 17))
+                }.every(30.seconds, (7, 17)).start.void
+              _ <- vkRevoke(vkBotApi, vkBot, config.getLongPollServerReq)
+                .every(10.seconds, (0, 24))
+                .start.void
 
               _ <- f1.join
               _ <- f2.join
             } yield ()
         }
     } yield ExitCode.Success
+
+  private def vkRevoke(vkApi: VkApi[F],
+                       vkBot: VkBot[F],
+                       getLongPollServerReq: GetLongPollServerReq,
+                       offset: Int = 0,
+                       count: Int = 100): F[Unit] =
+    for {
+      getConversationsRes <- vkApi.getConversations(
+        GetConversationsReq(
+          filter = Unanswered,
+          offset = offset,
+          count = count,
+          version = getLongPollServerReq.version,
+          accessToken = getLongPollServerReq.accessToken
+        )
+      )
+      _ <- getConversationsRes.items.map(_.conversation).traverse {
+        case Conversation(Peer(peerId, _, _), _) =>
+          vkBot.sendMessage(peerId, "Прошу прощения за заминки, сейчас я снова работаю") *>
+            Timer[F].sleep(2 seconds)
+      }
+    } yield ()
 
   private def resources(
     config: Config
