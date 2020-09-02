@@ -22,7 +22,7 @@ import org.http4s.client.middleware.Logger
 import org.slf4j.LoggerFactory
 import telegramium.bots.high.{Api, BotApi}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import doobie.ExecutionContexts
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.duration._
 
@@ -100,7 +100,7 @@ object Main extends IOApp {
       )
       _ <- getConversationsRes.response.items.map(_.conversation).traverse {
         case Conversation(Peer(peerId, _, _), _) =>
-          vkBot.sendMessage(peerId, "Прошу прощения за заминки, сейчас я снова работаю") *>
+          vkBot.sendMessage(peerId, "Прошу прощения за заминки, сейчас я снова работаю") >>
             Timer[F].sleep(2 seconds)
       }
     } yield ()
@@ -109,8 +109,11 @@ object Main extends IOApp {
     config: Config
   ): Resource[F, (HikariTransactor[F], Client[F], Blocker)] = {
     for {
-      transactor <- DB.transactor[F](config.database)
-      httpClient <- BlazeClientBuilder[F](global)
+      httpCp <- ExecutionContexts.cachedThreadPool[F]
+      connEc <- ExecutionContexts.fixedThreadPool[F](10)
+      tranEc <- ExecutionContexts.cachedThreadPool[F]
+      transactor <- DB.transactor[F](config.database, connEc, Blocker.liftExecutionContext(tranEc))
+      httpClient <- BlazeClientBuilder[F](httpCp)
         .withResponseHeaderTimeout(FiniteDuration(60, TimeUnit.SECONDS))
         .resource
       blocker <- Blocker[F]

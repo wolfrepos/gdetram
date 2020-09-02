@@ -9,15 +9,17 @@ import scala.concurrent.ExecutionContext
 
 object DB {
   def transactor[F[_]: Sync: Async: ContextShift](
-    config: DatabaseConfig
-  )(implicit ec: ExecutionContext): Resource[F, HikariTransactor[F]] = {
+    config: DatabaseConfig,
+    ec: ExecutionContext,
+    blocker: Blocker
+  ): Resource[F, HikariTransactor[F]] = {
     HikariTransactor.newHikariTransactor[F](
       config.driver,
       config.url,
       config.user,
       config.password,
       ec,
-      Blocker.liftExecutionContext(ec)
+      blocker
     )
   }
 

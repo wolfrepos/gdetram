@@ -32,8 +32,8 @@ class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
   def dailyMetricsDump: F[Unit] =
     journalRepo.dailyMetricsDump.void
 
-  override def onCallbackQuery(query: CallbackQuery): F[Unit] =
-    Sync[F].delay { log.info(s"got query: $query") } *> (query match {
+  override def onCallbackQuery(query: CallbackQuery): F[Unit] = (
+    Sync[F].delay { log.info(s"got query: $query") } >> (query match {
       case CallbackQuery(_, _, Some(message), _, _, Some(text), _) =>
         for {
           reply <- core.handleText(Tg -> message.chat.id, text)
@@ -41,9 +41,10 @@ class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
         } yield ()
       case _ => Sync[F].unit
     })
+  ).start.void
 
-  override def onMessage(message: Message): F[Unit] =
-    Sync[F].delay { log.info(s"got message: $message") } *> (message match {
+  override def onMessage(message: Message): F[Unit] = (
+    Sync[F].delay { log.info(s"got message: $message") } >> (message match {
       case Location(location) =>
         core
           .handleGeo(Tg -> message.chat.id, Coord(location.latitude, location.longitude))
@@ -52,11 +53,12 @@ class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
       case Text(text) =>
         core
           .handleText(Tg -> message.chat.id, text)
-          .flatMap(reply => send(message.chat.id, reply._1, Some(reply._2.toTg)).start.void)
+          .flatMap(reply => send(message.chat.id, reply._1, Some(reply._2.toTg)))
 
       case _ =>
         Sync[F].unit
     })
+  ).start.void
 
   def send(chatId: Long,
            text: String,
@@ -65,7 +67,7 @@ class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
       chatId = ChatIntId(chatId),
       text = text,
       replyMarkup = keyboardOpt
-    ).exec.void *>
+    ).exec.void >>
       Sync[F].delay { log.info(s"send message: $text to $chatId") }
 
 }

@@ -23,8 +23,8 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
 
   implicit val log: Logger = LoggerFactory.getLogger("VkGate")
 
-  override def onMessageNew(message: MessageNew): F[Unit] =
-    Sync[F].delay { log.info(s"got message $message") } *>
+  override def onMessageNew(message: MessageNew): F[Unit] = (
+    Sync[F].delay { log.info(s"got message $message") } >>
       (message match {
       // TODO: use custom extractors for pattern matching
       // https://stackoverflow.com/questions/39139815/pattern-matching-on-big-long-case-classes
@@ -35,7 +35,7 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
             peerId,
             text = answer._1,
             keyboard = answer._2.toVk.some
-          ).start.void
+          )
         } yield ()
       case MessageNew(_, _, peerId, _, text, _) =>
         for {
@@ -44,9 +44,10 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
             peerId,
             text = answer._1,
             keyboard = answer._2.toVk.some
-          ).start.void
+          )
         } yield ()
     })
+  ).start.void
 
   override def onWallPostNew(wallPostNew: WallPostNew): F[Unit] = Sync[F].unit
 
