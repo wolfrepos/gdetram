@@ -1,5 +1,6 @@
 package io.github.oybek.gdetram
 
+import cats.data.NonEmptyList
 import cats.effect.concurrent.Ref
 import cats.effect.syntax.all._
 import cats.effect.{Async, Clock, Concurrent, Sync, Timer}
@@ -32,7 +33,7 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
         for {
           answer <- core.handleGeo(Vk -> peerId, coord)
           _ <- sendMessage(
-            peerId,
+            Left(peerId),
             text = answer._1,
             keyboard = answer._2.toVk.some
           )
@@ -41,7 +42,7 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
         for {
           answer <- core.handleText(Vk -> peerId, text)
           _ <- sendMessage(
-            peerId,
+            Left(peerId),
             text = answer._1,
             keyboard = answer._2.toVk.some
           )
@@ -54,13 +55,14 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
   override def onWallReplyNew(wallReplyNew: WallReplyNew): F[Unit] =
     Sync[F].unit
 
-  def sendMessage(to: Long,
-                          text: String,
-                          attachment: Option[String] = None,
-                          keyboard: Option[Keyboard] = None): F[Unit] = {
+  def sendMessage(to: Either[Long, Option[NonEmptyList[Long]]],
+                  text: String,
+                  attachment: Option[String] = None,
+                  keyboard: Option[Keyboard] = None): F[Unit] = {
     val sendMessageReq = SendMessageReq(
-      peerId = to,
+      peerId = to.fold(_.some, _ => None),
       message = text,
+      userIds = to.fold(_ => None, identity),
       version = getLongPollServerReq.version,
       randomId = 0,
       accessToken = getLongPollServerReq.accessToken,

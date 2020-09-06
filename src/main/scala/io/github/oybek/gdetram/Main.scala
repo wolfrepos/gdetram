@@ -2,6 +2,7 @@ package io.github.oybek.gdetram
 
 import java.util.concurrent.TimeUnit
 
+import cats.data.NonEmptyList
 import cats.syntax.all._
 import cats.instances.list._
 import cats.effect.{Blocker, ExitCode, IO, IOApp, Resource, Sync, Timer}
@@ -21,8 +22,8 @@ import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.middleware.Logger
 import org.slf4j.LoggerFactory
 import telegramium.bots.high.{Api, BotApi}
-
 import doobie.ExecutionContexts
+
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.duration._
 
@@ -54,8 +55,8 @@ object Main extends IOApp {
             implicit val core             : BrainAlg[F]           = new Brain[F]
             implicit val metricService    : MetricServiceAlg[F]   = new MetricService[F]()
 
-            val vkBot = new VkBot[F](config.getLongPollServerReq)
-            val tgBot = new TgBot[F](config.adminTgIds.split(",").map(_.trim).toList)
+            implicit val vkBot: VkBot[F] = new VkBot[F](config.getLongPollServerReq)
+            implicit val tgBot: TgBot[F] = new TgBot[F](config.adminTgIds.split(",").map(_.trim).toList)
 
             for {
               _ <- DB.initialize(transactor)
@@ -65,14 +66,8 @@ object Main extends IOApp {
               _ <- tgBot.dailyReports().everyDayAt( 9, 30).start
               _ <- tgBot.dailyMetricsDump.everyDayAt(23, 59).start
 
-              _ <- messageRepo
-                .pollSyncMessage
-                .flatTap(x => Sync[F].delay(log.info(s"sync_message: $x")))
-                .flatMap {
-                  case Some((Vk, id, text)) => vkBot.sendMessage(id, text)
-                  case Some((Tg, id, text)) => tgBot.send(id.toInt, text)
-                  case _ => Sync[F].unit
-                }.every(30.seconds, (7, 17)).start.void
+              _ <- spamTg(messageRepo).start.void
+              _ <- spamVk(messageRepo).start.void
 
               _ <- vkRevoke(vkBotApi, vkBot, config.getLongPollServerReq)
                 .every(10.seconds, (9, 24)).start.void
@@ -82,6 +77,28 @@ object Main extends IOApp {
             } yield ()
         }
     } yield ExitCode.Success
+
+  private def spamTg(messageRepo: MessageRepoAlg[F])(implicit tgBot: TgBot[F]) =
+    messageRepo
+      .pollSyncMessage(Tg)
+      .flatTap(x => Sync[F].delay(log.info(s"sync_message tg: $x")))
+      .flatMap {
+        case List((Tg, id, text)) => tgBot.send(id.toInt, text)
+        case _ => Sync[F].unit
+      }.every(10.seconds, (7, 17))
+
+  private def spamVk(messageRepo: MessageRepoAlg[F])(implicit vkBot: VkBot[F]) =
+    messageRepo
+      .pollSyncMessage(Vk, 100)
+      .flatTap(x => Sync[F].delay(log.info(s"sync_message vk: $x")))
+      .flatMap {
+        case (Vk, id, text)::xs =>
+          vkBot.sendMessage(
+            Right(NonEmptyList.fromList(id::xs.map(_._2))),
+            text,
+          )
+        case _ => Sync[F].unit
+      }.every(10.seconds, (7, 17))
 
   private def vkRevoke(vkApi: VkApi[F],
                        vkBot: VkBot[F],
@@ -100,7 +117,7 @@ object Main extends IOApp {
       )
       _ <- getConversationsRes.response.items.map(_.conversation).traverse {
         case Conversation(Peer(peerId, _, _), _) =>
-          vkBot.sendMessage(peerId, "Прошу прощения за заминки, сейчас я снова работаю") >>
+          vkBot.sendMessage(Left(peerId), "Прошу прощения за заминки, сейчас я снова работаю") >>
             Timer[F].sleep(2 seconds)
       }
     } yield ()

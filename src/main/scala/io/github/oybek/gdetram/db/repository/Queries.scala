@@ -80,8 +80,15 @@ object Queries {
   def delAsyncMessageFor(user: (Platform, Long), text: String): Update0 =
     sql"delete from async_message where platform = ${user._1} and id = ${user._2} and text = $text".update
 
-  def getSyncMessage: Query0[(Platform, Long, String)] =
-    sql"select platform, id, text from sync_message limit 1".query[(Platform, Long, String)]
+  def getSyncMessage(platform: Platform, limit: Long): Query0[(Platform, Long, String)] =
+    sql"""
+         |select platform,
+         |       id,
+         |       text
+         |  from sync_message
+         |  where platform = $platform
+         |  limit $limit
+         |""".stripMargin.query[(Platform, Long, String)]
 
   def delSyncMessageFor(user: (Platform, Long), text: String): Update0 =
     sql"delete from sync_message where platform = ${user._1} and id = ${user._2} and text = $text".update
