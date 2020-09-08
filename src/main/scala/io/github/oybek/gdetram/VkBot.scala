@@ -10,12 +10,11 @@ import io.github.oybek.gdetram.domain.BrainAlg
 import io.github.oybek.gdetram.domain.model.Platform.Vk
 import io.github.oybek.gdetram.util.Formatting._
 import io.github.oybek.vk4s.api._
-import io.github.oybek.vk4s.domain.{Geo, LongPollBot, MessageNew, WallPostNew, WallReplyNew}
+import io.github.oybek.vk4s.domain.{AudioMessage, Geo, LongPollBot, MessageNew, WallPostNew, WallReplyNew}
 import io.github.oybek.vk4s.api.{GetLongPollServerReq, Keyboard, SendMessageReq}
 import org.http4s.client.Client
 import org.slf4j.{Logger, LoggerFactory}
-
-import scala.concurrent.duration.MILLISECONDS
+import scala.concurrent.duration._
 
 class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollServerReq)(implicit httpClient: Client[F],
                                                                                         core: BrainAlg[F],
@@ -25,30 +24,45 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
   implicit val log: Logger = LoggerFactory.getLogger("VkGate")
 
   override def onMessageNew(message: MessageNew): F[Unit] = (
-    Sync[F].delay { log.info(s"got message $message") } >>
-      (message match {
-      // TODO: use custom extractors for pattern matching
-      // https://stackoverflow.com/questions/39139815/pattern-matching-on-big-long-case-classes
-      case MessageNew(_, _, peerId, _, _, Some(Geo(coord, _))) =>
-        for {
-          answer <- core.handleGeo(Vk -> peerId, coord)
-          _ <- sendMessage(
-            Left(peerId),
-            text = answer._1,
-            keyboard = answer._2.toVk.some
-          )
-        } yield ()
-      case MessageNew(_, _, peerId, _, text, _) =>
-        for {
-          answer <- core.handleText(Vk -> peerId, text)
-          _ <- sendMessage(
-            Left(peerId),
-            text = answer._1,
-            keyboard = answer._2.toVk.some
-          )
-        } yield ()
-    })
-  ).start.void
+    Sync[F].delay { log.info(s"got message $message") } >> (
+      message match {
+        case MessageNew(_, _, peerId, _, _, Some(Geo(coord, _)), _) =>
+          for {
+            answer <- core.handleGeo(Vk -> peerId, coord)
+            _ <- sendMessage(Left(peerId), text = answer._1, keyboard = answer._2.toVk.some)
+          } yield ()
+
+        case MessageNew(messageId, _, peerId, _, _, _, List(AudioMessage(_, _, _, _, _, _))) =>
+          for {
+            _ <- Timer[F].sleep(1500 millis)
+            getMessageByIdRes <- vkApi.getMessageById(
+              GetMessageByIdReq(
+                messageIds = List(messageId),
+                version = getLongPollServerReq.version,
+                accessToken = getLongPollServerReq.accessToken
+              )
+            )
+            text = getMessageByIdRes.response.items.headOption.flatMap {
+              _.attachments.collectFirst { case x: AudioMessage => x }
+            } match {
+              case Some(AudioMessage(_, _, _, _, _, Some(text))) => text
+              case _ => "Cannot recognize speech"
+            }
+            answer <- core.handleText(Vk -> peerId, text)
+            _ <- sendMessage(Left(peerId), text = answer._1, keyboard = answer._2.toVk.some)
+          } yield ()
+
+        case MessageNew(_, _, peerId, _, text, _, _) =>
+          for {
+            answer <- core.handleText(Vk -> peerId, text)
+            _ <- sendMessage(
+              Left(peerId),
+              text = answer._1,
+              keyboard = answer._2.toVk.some
+            )
+          } yield ()
+      }
+  )).start.void
 
   override def onWallPostNew(wallPostNew: WallPostNew): F[Unit] = Sync[F].unit
 
