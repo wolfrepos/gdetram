@@ -28,6 +28,8 @@ class BrainSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonn
   implicit val cityRepo = stub[CityRepoAlg[IO]]
   implicit val userRepo = stub[UserRepoAlg[IO]]
 
+  private val rightArrow = "➡️"
+
   "simple query" must "work" in {
     // test datas
     val stop = Stop(0, "Дом кино", 0.0f, 0.0f, "http://foo.bar", City(1, "city", 0.0f, 0.0f))
@@ -60,7 +62,7 @@ class BrainSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonn
     // check
     result.unsafeRunSync()._1 shouldBe
       s"""
-         |Дом кино -> Гагарина
+         |Дом кино $rightArrow Гагарина
          |${TransportT.emoji(TransportT.Bus)} 25 - 5 мин.
          |""".stripMargin
   }

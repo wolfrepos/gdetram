@@ -10,9 +10,11 @@ object Formatting {
 
   val emojis = List(Bus, Tram, Troll).map(TransportT.emoji)
 
+  val rightArrow = "➡️"
+
   def toChatText(stop: Stop, dir: String, reaches: List[Arrival]): String = {
     s"""
-       |${stop.name} -> $dir
+       |${stop.name} $rightArrow $dir
        |${reachesToText(reaches)}
        |""".stripMargin
   }
