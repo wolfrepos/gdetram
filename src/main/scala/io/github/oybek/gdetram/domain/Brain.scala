@@ -24,7 +24,7 @@ class Brain[F[_]: Sync: Concurrent: Timer](implicit
                                            messageRepo: MessageRepoAlg[F],
                                            stopRepo: StopRepoAlg[F],
                                            userRepo: UserRepoAlg[F])
-    extends BrainAlg[F] {
+    extends BrainAlg[F] with Phrases {
 
   override def handleText(stateKey: (Platform, Long),
                           text: String): F[(String, List[List[Button]])] =
@@ -39,36 +39,12 @@ class Brain[F[_]: Sync: Concurrent: Timer](implicit
               Sync[F].pure("Не нашел такой город 😟\nПопробуйте еще раз" -> defaultKeyboard())
             } else {
               userRepo.upsert(User(stateKey._1, stateKey._2.toInt, city)).as(
-                s"""
-                   |🏛️ Выбран город ${city.name}
-                   |
-                   |Напишите название нужной Вам остановки
-                   |Или отправьте геопозицию - я подскажу
-                   |названия ближайших остановок
-                   |
-                   |Для смены города напишите слово 'город'
-                   |а потом название города, например:
-                   |город Екатеринбург
-                   |город Казань
-                   |и т. д.
-                   |Или просто отправьте геопозицию
-                   |""".stripMargin -> defaultKeyboard(TextButton("город " + city.name))
+                cityChosen(city.name) -> defaultKeyboard(TextButton("город " + city.name))
               )
             }
           } yield res
         case Some(user) => searchStop(stateKey, text, user)
-        case None => Sync[F].pure(
-          """
-            |Подскажите в каком Вы городе?
-            |
-            |Для этого напишите слово 'город'
-            |затем название города, например:
-            |город Екатеринбург
-            |город Казань
-            |и т. д.
-            |Ну или просто отправьте геопозицию
-            |""".stripMargin -> defaultKeyboard()
-        )
+        case None => (cityAsk, defaultKeyboard()).pure[F]
       }
     } yield reply
 
