@@ -12,7 +12,7 @@ object Formatting {
 
   def toChatText(stop: Stop, dir: String, reaches: List[Arrival]): String = {
     s"""
-       |${stop.name} на $dir
+       |${stop.name} -> $dir
        |${reachesToText(reaches)}
        |""".stripMargin
   }

@@ -60,7 +60,7 @@ class BrainSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonn
     // check
     result.unsafeRunSync()._1 shouldBe
       s"""
-         |Дом кино на Гагарина
+         |Дом кино -> Гагарина
          |${TransportT.emoji(TransportT.Bus)} 25 - 5 мин.
          |""".stripMargin
   }

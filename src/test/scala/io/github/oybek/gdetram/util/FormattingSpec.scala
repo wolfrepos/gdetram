@@ -28,7 +28,7 @@ class FormattingSpec
         Arrival("33", 5 minutes, Tram))
     ) shouldBe
       s"""
-         |test_names на test_dir
+         |test_names -> test_dir
          |${TransportT.emoji(TransportT.Tram)} 12 подъезжает
          |${TransportT.emoji(TransportT.Tram)} 1 - 1 мин.
          |${TransportT.emoji(TransportT.Tram)} 33 - 5 мин.
@@ -43,7 +43,7 @@ class FormattingSpec
       List(Arrival("123", 0 minutes, Tram), Arrival("123", 1 minutes, Tram))
     ) shouldBe
       s"""
-         |test_names на test_dir
+         |test_names -> test_dir
          |${TransportT.emoji(TransportT.Tram)} 123 подъезжает
          |${TransportT.emoji(TransportT.Tram)} 123 - 1 мин.
          |""".stripMargin
@@ -52,7 +52,7 @@ class FormattingSpec
   "Tabloid" must "be formatted with no arrivals" in {
     Formatting.toChatText(stop, "test_dir", List()) shouldBe
       s"""
-         |test_names на test_dir
+         |test_names -> test_dir
          |Ничего не едет
          |""".stripMargin
   }
