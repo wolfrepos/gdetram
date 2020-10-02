@@ -30,6 +30,7 @@ class Brain[F[_]: Sync: Concurrent: Timer](implicit
                           text: String): F[(String, List[List[Button]])] =
     for {
       userOpt <- userRepo.selectUser(stateKey._1, stateKey._2.toInt)
+      cityNames <- cityRepo.selectAllCitiesNames
       reply <- userOpt match {
         case _ if text.trim.toLowerCase.startsWith("город") =>
           for {
@@ -39,12 +40,12 @@ class Brain[F[_]: Sync: Concurrent: Timer](implicit
               Sync[F].pure("Не нашел такой город 😟\nПопробуйте еще раз" -> defaultKeyboard())
             } else {
               userRepo.upsert(User(stateKey._1, stateKey._2.toInt, city)).as(
-                cityChosen(city.name) -> defaultKeyboard(TextButton("город " + city.name))
+                cityChosen(city.name, cityNames) -> defaultKeyboard(TextButton("город " + city.name))
               )
             }
           } yield res
         case Some(user) => searchStop(stateKey, text, user)
-        case None => (cityAsk, defaultKeyboard()).pure[F]
+        case None => (cityAsk(cityNames), defaultKeyboard()).pure[F]
       }
     } yield reply
 
