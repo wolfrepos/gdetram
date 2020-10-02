@@ -39,6 +39,10 @@ class BrainSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonn
       .when("Дом кино", 1)
       .returns(IO { Some(stop -> 0) })
 
+    (() => cityRepo.selectAllCitiesNames)
+      .when()
+      .returns(IO { List("hello") })
+
     (userRepo.selectUser _)
       .when(*, *)
       .returns(IO { Some(User(Vk, 123, City(1, "city", 0.0f, 0.0f))) })
