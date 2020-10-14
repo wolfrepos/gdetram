@@ -78,16 +78,24 @@ object Main extends IOApp {
         }
     } yield ExitCode.Success
 
-  private def spamTg(messageRepo: MessageRepoAlg[F])(implicit tgBot: TgBot[F]) =
+  private def spamTg(messageRepo: MessageRepoAlg[F])(implicit tgBot: TgBot[F]): F[Unit] =
     messageRepo
       .pollSyncMessage(Tg)
       .flatTap(x => Sync[F].delay(log.info(s"sync_message tg: $x")))
       .flatMap {
         case List((Tg, id, text)) => tgBot.send(id.toInt, text)
         case _ => Sync[F].unit
-      }.every(10.seconds, (7, 17))
+      }
+      .attempt.flatMap {
+        case Left(ex) =>
+          Sync[F].delay { log.error(s"tg sync_message send error ${ex.getLocalizedMessage}") } >>
+            spamTg(messageRepo)
+        case Right(_) =>
+          ().pure[F]
+      }
+      .every(10.seconds, (7, 17))
 
-  private def spamVk(messageRepo: MessageRepoAlg[F])(implicit vkBot: VkBot[F]) =
+  private def spamVk(messageRepo: MessageRepoAlg[F])(implicit vkBot: VkBot[F]): F[Unit] =
     messageRepo
       .pollSyncMessage(Vk, 100)
       .flatTap(x => Sync[F].delay(log.info(s"sync_message vk: $x")))
@@ -98,7 +106,15 @@ object Main extends IOApp {
             text,
           )
         case _ => Sync[F].unit
-      }.every(10.seconds, (7, 17))
+      }
+      .attempt.flatMap {
+        case Left(ex) =>
+          Sync[F].delay { log.error(s"vk sync_message send error ${ex.getLocalizedMessage}") } >>
+            spamVk(messageRepo)
+        case Right(_) =>
+          ().pure[F]
+      }
+      .every(10.seconds, (7, 17))
 
   private def vkRevoke(vkApi: VkApi[F],
                        vkBot: VkBot[F],
