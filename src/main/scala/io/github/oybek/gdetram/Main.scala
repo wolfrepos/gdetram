@@ -93,7 +93,7 @@ object Main extends IOApp {
         case Right(_) =>
           ().pure[F]
       }
-      .every(10.seconds, (7, 17))
+      .every(10.seconds, (9, 20))
 
   private def spamVk(messageRepo: MessageRepoAlg[F])(implicit vkBot: VkBot[F]): F[Unit] =
     messageRepo
@@ -114,7 +114,7 @@ object Main extends IOApp {
         case Right(_) =>
           ().pure[F]
       }
-      .every(10.seconds, (7, 17))
+      .every(10.seconds, (9, 20))
 
   private def vkRevoke(vkApi: VkApi[F],
                        vkBot: VkBot[F],
