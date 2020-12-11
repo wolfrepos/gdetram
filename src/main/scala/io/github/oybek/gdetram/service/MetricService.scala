@@ -38,7 +38,7 @@ class MetricService[F[_]: Sync](implicit userRepo: UserRepoAlg[F]) extends Metri
         case (city, usersInfo) =>
           val (active, passive) = usersInfo.foldLeft((0, 0)) {
             case ((a, p), userInfo) =>
-              if (userInfo.lastWriteTime.after(2.weeksAgo)) (a + 1, p)
+              if (userInfo.lastWriteTime.after(4.weeksAgo)) (a + 1, p)
               else (a, p + 1)
           }
           s"#${city.name} - Активных: $active, Пассивных: $passive"
