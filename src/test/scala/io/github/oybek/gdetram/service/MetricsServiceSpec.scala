@@ -25,12 +25,12 @@ class MetricsServiceSpec extends AnyFlatSpec with Matchers with MockFactory with
       .returns(IO {
         List(
           UserInfo(User(Vk, 123, yekb), 1.weeksAgo),
-          UserInfo(User(Vk, 123, yekb), 3.weeksAgo),
-          UserInfo(User(Vk, 123, perm), 3.weeksAgo),
+          UserInfo(User(Vk, 123, yekb), 5.weeksAgo),
+          UserInfo(User(Vk, 123, perm), 5.weeksAgo),
           UserInfo(User(Tg, 123, yekb), 1.weeksAgo),
-          UserInfo(User(Tg, 123, yekb), 3.weeksAgo),
-          UserInfo(User(Tg, 123, perm), 3.weeksAgo),
-          UserInfo(User(Tg, 123, perm), 3.weeksAgo)
+          UserInfo(User(Tg, 123, yekb), 5.weeksAgo),
+          UserInfo(User(Tg, 123, perm), 5.weeksAgo),
+          UserInfo(User(Tg, 123, perm), 5.weeksAgo)
         )
       })
 
