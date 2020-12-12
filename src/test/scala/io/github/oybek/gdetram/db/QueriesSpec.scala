@@ -39,11 +39,7 @@ class QueriesSpec extends AnyFunSuite with IOChecker with ForAllTestContainer {
   }
 
   test("user repo queries") {
-    check(UserRepo.selectCityUserCount)
-  }
-
-  test("check metrics query") {
-    check(JournalRepo.doDailyMetricsDump)
+    check(Queries.selectUsersInfo)
   }
 
   test("city select") {

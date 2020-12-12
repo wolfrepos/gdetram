@@ -2,45 +2,46 @@ package io.github.oybek.gdetram.service
 
 import java.io.File
 import java.sql.Timestamp
-
 import cats.syntax.all._
 import cats.effect.Sync
-import io.github.oybek.gdetram.db.repository.{DailyMetric, JournalRepoAlg, UserRepoAlg}
-import io.github.oybek.gdetram.domain.model.Platform
+import io.github.oybek.gdetram.db.repository.UserRepoAlg
+import io.github.oybek.gdetram.domain.model.UserInfo
+
+import java.time.LocalDateTime
 
 trait MetricServiceAlg[F[_]] {
-  def mainMetrics: F[String]
+  def userStats: F[String]
 }
 
-class MetricService[F[_]: Sync](implicit
-                                journalRepo: JournalRepoAlg[F],
-                                userRepo: UserRepoAlg[F]) extends MetricServiceAlg[F] {
+class MetricService[F[_]: Sync](implicit userRepo: UserRepoAlg[F]) extends MetricServiceAlg[F] {
 
-  def mainMetrics: F[String] =
+  def userStats: F[String] =
     for {
-      cityDailyMetrics <- journalRepo.selectAllDailyMetrics
-      caption = cityDailyMetrics
-        .groupBy(_.cityName)
-        .toList
-        .flatMap { case (_, cityMetrics) => cityReport(cityMetrics) }
+      usersInfo <- userRepo.selectUsersInfo
+      caption = usersInfo
+        .groupBy(_.user.platform)
+        .view.mapValues(cityReport)
+        .map { case (platform, info) => s"$platform\n$info" }
         .mkString("\n")
     } yield caption
 
   implicit def ordered: Ordering[Timestamp] = (x: Timestamp, y: Timestamp) => x compareTo y
 
-  private def cityReport(cityMetrics: List[DailyMetric]): Option[String] = {
-    cityMetrics
-      .sortBy(_.dateWhen)(Ordering[Timestamp].reverse)
-      .take(2) match {
-      case Nil => None
-      case DailyMetric(_, cityName, active, passive)::Nil =>
-        s"#$cityName - Активных: $active Пассивных: $passive".some
-      case x::y::Nil =>
-        val ad = x.active - y.active
-        val pd = x.passive - y.passive
-        def ss(x: Int) = if (x >= 0) s"+$x" else s"$x"
-        s"#${x.cityName} - Активных: ${x.active}(${ss(ad)}) Пассивных: ${x.passive}(${ss(pd)})".some
-      case _ => "".some
-    }
+  private def cityReport(usersInfo: List[UserInfo]): String =
+    usersInfo
+      .groupBy(_.user.city)
+      .map {
+        case (city, usersInfo) =>
+          val (active, passive) = usersInfo.foldLeft((0, 0)) {
+            case ((a, p), userInfo) =>
+              if (userInfo.lastWriteTime.after(2.weeksAgo)) (a + 1, p)
+              else (a, p + 1)
+          }
+          s"#${city.name} - Активных: $active, Пассивных: $passive"
+      }.mkString("\n")
+
+  implicit class IntOps(n: Int) {
+    def weeksAgo: Timestamp =
+      Timestamp.valueOf(LocalDateTime.now().minusWeeks(n))
   }
 }

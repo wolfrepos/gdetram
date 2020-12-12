@@ -53,7 +53,7 @@ object Main extends IOApp {
             implicit val tgBotApi         : Api[F]                = new BotApi[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}", blocker)
             implicit val source1          : TabloidAlg[F]         = new TabloidA[F]
             implicit val core             : BrainAlg[F]           = new Brain[F]
-            implicit val metricService    : MetricServiceAlg[F]   = new MetricService[F]()
+            implicit val metricService    : MetricServiceAlg[F]   = new MetricService[F]
 
             implicit val vkBot: VkBot[F] = new VkBot[F](config.getLongPollServerReq)
             implicit val tgBot: TgBot[F] = new TgBot[F](config.adminTgIds.split(",").map(_.trim).toList)
@@ -63,8 +63,7 @@ object Main extends IOApp {
               f1 <- vkBot.start.start
               f2 <- tgBot.start.start
 
-              _ <- tgBot.dailyReports().everyDayAt( 9, 30).start
-              _ <- tgBot.dailyMetricsDump.everyDayAt(23, 59).start
+              _ <- tgBot.dailyReports().everyDayAt(8, 0).start
 
               _ <- spamTg(messageRepo).start.void
               _ <- spamVk(messageRepo).start.void

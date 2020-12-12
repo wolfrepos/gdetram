@@ -27,10 +27,7 @@ class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
   import telegramium.bots.client._
 
   def dailyReports(chatId: Int = -391934727): F[Unit] =
-    metricService.mainMetrics.flatMap(send(chatId, _))
-
-  def dailyMetricsDump: F[Unit] =
-    journalRepo.dailyMetricsDump.void
+    metricService.userStats.flatMap(send(chatId, _))
 
   override def onCallbackQuery(query: CallbackQuery): F[Unit] = (
     Sync[F].delay { log.info(s"got query: $query") } >> (query match {
@@ -49,6 +46,8 @@ class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
         core
           .handleGeo(Tg -> message.chat.id, Coord(location.latitude, location.longitude))
           .flatMap(reply => send(message.chat.id, reply._1, Some(reply._2.toTg)))
+
+      case Text("/stat" | "/stat@gdetrambot") => dailyReports()
 
       case Text(text) =>
         core
