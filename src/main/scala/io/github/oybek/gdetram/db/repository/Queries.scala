@@ -4,7 +4,7 @@ import doobie.util.query.Query0
 import doobie.util.update.Update0
 import doobie.implicits._
 import doobie.implicits.javasql._
-import io.github.oybek.gdetram.domain.model.{City, Platform, PsMessage, Record, Stop, User}
+import io.github.oybek.gdetram.domain.model.{City, Platform, PsMessage, Record, Stop, User, UserInfo}
 
 object Queries {
 
@@ -92,4 +92,24 @@ object Queries {
 
   def delSyncMessageFor(user: (Platform, Long), text: String): Update0 =
     sql"delete from sync_message where platform = ${user._1} and id = ${user._2} and text = $text".update
+
+  def selectUsersInfo: Query0[UserInfo] =
+    sql"""
+         |select usr.platform,
+         |       usr.id,
+         |       city_id,
+         |       name,
+         |       latitude,
+         |       longitude,
+         |       last_time
+         |  from usr
+         |  inner join city on usr.city_id = city.id
+         |  inner join (
+         |    select max(time) as last_time,
+         |           journal.platform,
+         |           journal.user_id
+         |      from journal
+         |      group by (journal.platform, journal.user_id)
+         |  ) as j on usr.platform = j.platform and usr.id = j.user_id::int
+         |""".stripMargin.query[UserInfo]
 }
