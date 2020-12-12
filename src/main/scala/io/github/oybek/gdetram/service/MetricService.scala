@@ -5,6 +5,7 @@ import java.sql.Timestamp
 import cats.syntax.all._
 import cats.effect.Sync
 import io.github.oybek.gdetram.db.repository.UserRepoAlg
+import io.github.oybek.gdetram.domain.model.Platform._
 import io.github.oybek.gdetram.domain.model.UserInfo
 
 import java.time.LocalDateTime
@@ -21,8 +22,11 @@ class MetricService[F[_]: Sync](implicit userRepo: UserRepoAlg[F]) extends Metri
       caption = usersInfo
         .groupBy(_.user.platform)
         .view.mapValues(cityReport)
-        .map { case (platform, info) => s"$platform\n$info" }
-        .mkString("\n")
+        .map {
+          case (Vk, info) => s"ВК\n$info"
+          case (Tg, info) => s"Телега\n$info"
+        }
+        .mkString("\n\n")
     } yield caption
 
   implicit def ordered: Ordering[Timestamp] = (x: Timestamp, y: Timestamp) => x compareTo y

@@ -63,7 +63,7 @@ object Main extends IOApp {
               f1 <- vkBot.start.start
               f2 <- tgBot.start.start
 
-              _ <- tgBot.dailyReports().everyDayAt(8, 0).start
+              _ <- tgBot.dailyReports("Ну что уебаны?! Готовы к метрикам?".some).everyDayAt(8, 0).start
 
               _ <- spamTg(messageRepo).start.void
               _ <- spamVk(messageRepo).start.void

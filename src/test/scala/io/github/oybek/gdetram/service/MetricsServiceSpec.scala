@@ -35,10 +35,11 @@ class MetricsServiceSpec extends AnyFlatSpec with Matchers with MockFactory with
       })
 
     metricService.userStats.unsafeRunSync() shouldBe (
-      """Vk
+      """ВК
         |#Екатеринбург - Активных: 1, Пассивных: 1
         |#Пермь - Активных: 0, Пассивных: 1
-        |Tg
+        |
+        |Телега
         |#Екатеринбург - Активных: 1, Пассивных: 1
         |#Пермь - Активных: 0, Пассивных: 2""".stripMargin
     )
