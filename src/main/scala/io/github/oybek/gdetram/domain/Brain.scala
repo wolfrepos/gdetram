@@ -6,7 +6,7 @@ import cats.effect.{Concurrent, Sync, Timer}
 import cats.implicits._
 import io.github.oybek.gdetram.db.repository._
 import io.github.oybek.gdetram.domain.model.{Button, GeoButton, LinkButton, Platform, Record, Stop, TextButton, User}
-import io.github.oybek.gdetram.service.{MessageRepoAlg, TabloidAlg}
+import io.github.oybek.gdetram.service.TabloidAlg
 import io.github.oybek.gdetram.util.Formatting
 import io.github.oybek.vk4s.domain.Coord
 

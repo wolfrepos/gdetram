@@ -4,7 +4,7 @@ import cats.data.NonEmptyList
 import cats.effect.IO
 import cats.effect.concurrent.Ref
 import doobie.util.ExecutionContexts
-import io.github.oybek.gdetram.db.repository.{CityRepoAlg, JournalRepoAlg, StopRepoAlg, UserRepoAlg}
+import io.github.oybek.gdetram.db.repository.{CityRepoAlg, JournalRepoAlg, MessageRepoAlg, StopRepoAlg, UserRepoAlg}
 import io.github.oybek.gdetram.donnars.StopDonnar
 import io.github.oybek.gdetram.domain.model.Platform.Vk
 import io.github.oybek.gdetram.domain.model.{City, Stop, User}

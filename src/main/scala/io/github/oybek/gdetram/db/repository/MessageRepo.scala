@@ -1,12 +1,11 @@
-package io.github.oybek.gdetram.service
+package io.github.oybek.gdetram.db.repository
 
 import cats.effect.Sync
-import cats.instances.option._
 import cats.instances.list._
+import cats.instances.option._
 import cats.syntax.all._
 import doobie.implicits._
 import doobie.util.transactor.Transactor
-import io.github.oybek.gdetram.db.repository.Queries
 import io.github.oybek.gdetram.domain.model.Platform
 
 trait MessageRepoAlg[F[_]] {
