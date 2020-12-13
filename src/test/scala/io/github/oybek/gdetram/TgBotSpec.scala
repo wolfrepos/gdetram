@@ -30,6 +30,7 @@ class TgBotSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonn
         container.password,
       )
 
+/*
   implicit val api: Api[IO] = mock[Api[IO]]
 
   implicit val cityRepo: CityRepoAlg[IO] = new CityRepo[IO](transactor)
@@ -44,4 +45,5 @@ class TgBotSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonn
   implicit val brain: Brain[IO] = new Brain[IO]
 
   implicit val tgBot: TgBot[IO] = new TgBot[IO](List.empty[String])
+*/
 }
