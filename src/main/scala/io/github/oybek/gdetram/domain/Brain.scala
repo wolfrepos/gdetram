@@ -1,11 +1,10 @@
 package io.github.oybek.gdetram.domain
 
 import java.sql.Timestamp
-
 import cats.effect.{Concurrent, Sync, Timer}
 import cats.implicits._
 import io.github.oybek.gdetram.db.repository._
-import io.github.oybek.gdetram.domain.model.{Button, GeoButton, LinkButton, Platform, Record, Stop, TextButton, User}
+import io.github.oybek.gdetram.domain.model.{Button, City, GeoButton, LinkButton, Platform, Record, Stop, TextButton, User}
 import io.github.oybek.gdetram.service.TabloidAlg
 import io.github.oybek.gdetram.util.Formatting
 import io.github.oybek.vk4s.domain.Coord
@@ -34,20 +33,32 @@ class Brain[F[_]: Sync: Concurrent: Timer](implicit
       reply <- userOpt match {
         case _ if text.trim.toLowerCase.startsWith("город") =>
           for {
-            cityAndMistakeNum <- cityRepo.selectCity(text.trim.drop(5).trim)
-            (city, mistakeNum) = cityAndMistakeNum
-            res <- if (mistakeNum > 4) {
+            cityOpt <- cityNameWritten(text.trim.drop(5).trim)
+            res <- cityOpt.fold(
               Sync[F].pure("Не нашел такой город 😟\nПопробуйте еще раз" -> defaultKeyboard())
-            } else {
+            )(city =>
               userRepo.upsert(User(stateKey._1, stateKey._2.toInt, city)).as(
-                cityChosen(city.name, cityNames) -> defaultKeyboard(TextButton("город " + city.name))
-              )
-            }
+                cityChosen(city.name, cityNames) -> defaultKeyboard(TextButton("город " + city.name)))
+            )
           } yield res
         case Some(user) => searchStop(stateKey, text, user)
-        case None => (cityAsk(cityNames), defaultKeyboard()).pure[F]
+        case None =>
+          cityNameWritten(text).flatMap {
+            case Some(city) =>
+              userRepo.upsert(User(stateKey._1, stateKey._2.toInt, city)).as(
+                cityChosen(city.name, cityNames) -> defaultKeyboard(TextButton("город " + city.name)))
+            case None =>
+              (cityAsk(cityNames), defaultKeyboard()).pure[F]
+          }
       }
     } yield reply
+
+  private def cityNameWritten(text: String): F[Option[City]] =
+    for {
+      cityAndMistakeNum <- cityRepo.selectCity(text.trim.drop(5).trim)
+      (city, mistakeNum) = cityAndMistakeNum
+      res = if (mistakeNum > 4) { None } else { city.some }
+    } yield res
 
   private def searchStop(stateKey: (Platform, Long),
                          text: String,
