@@ -38,7 +38,13 @@ class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
       case CallbackQuery(_, _, Some(message), _, _, Some(text), _) =>
         for {
           reply <- core.handleText(Tg -> message.chat.id, text)
-          _ <- send(message.chat.id, reply._1, Some(reply._2.toTg))
+          _ <- Methods.editMessageText(
+            chatId = ChatIntId(message.chat.id).some,
+            messageId = message.messageId.some,
+            text = reply._1,
+            replyMarkup = reply._2.toTg.some
+          ).exec.void
+          _ <- Sync[F].delay { log.info(s"update message: ${message.messageId} from ${message.chat.id}") }
         } yield ()
       case _ => Sync[F].unit
     })
