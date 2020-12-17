@@ -55,7 +55,7 @@ class Brain[F[_]: Sync: Concurrent: Timer](implicit
 
   private def cityNameWritten(text: String): F[Option[City]] =
     for {
-      cityAndMistakeNum <- cityRepo.selectCity(text.trim.drop(5).trim)
+      cityAndMistakeNum <- cityRepo.selectCity(text.trim)
       (city, mistakeNum) = cityAndMistakeNum
       res = if (mistakeNum > 4) { None } else { city.some }
     } yield res
