@@ -11,7 +11,7 @@ trait Phrases {
        |Или просто отправь геопозицию
        |
        |Доступные города:
-       |${cityNames.mkString(", ")}
+       |${cityNames.sorted.mkString(", ")}
        |""".stripMargin
 
   def cityAsk(cityNames: List[String]): String =
@@ -20,7 +20,7 @@ trait Phrases {
       |Или просто отправь геопозицию
       |
       |Доступные города:
-      |${cityNames.mkString(", ")}
+      |${cityNames.sorted.mkString(", ")}
       |""".stripMargin
 
 }
