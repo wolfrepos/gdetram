@@ -11,7 +11,7 @@ import io.github.oybek.gdetram.db.DB
 import io.github.oybek.gdetram.db.repository._
 import io.github.oybek.gdetram.domain.model.Platform.{Tg, Vk}
 import io.github.oybek.gdetram.domain.{Brain, BrainAlg}
-import io.github.oybek.gdetram.service.{DocFetcherAlg, TabloidA}
+import io.github.oybek.gdetram.service.{DocFetcherAlg, BustimeTabloid}
 import io.github.oybek.gdetram.service._
 import io.github.oybek.gdetram.util.TimeTools._
 import io.github.oybek.vk4s.api.{GetConversationsReq, GetLongPollServerReq, Unanswered, VkApi, VkApiHttp4s}
@@ -52,7 +52,7 @@ object Main extends IOApp {
             implicit val messageRepo      : MessageRepoAlg[F]     = new MessageRepo[F](transactor)
             implicit val vkBotApi         : VkApi[F]              = new VkApiHttp4s[F](client)
             implicit val tgBotApi         : Api[F]                = new BotApi[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}", blocker)
-            implicit val source1          : TabloidAlg[F]         = new TabloidA[F]
+            implicit val source1          : TabloidAlg[F]         = new BustimeTabloid[F]
             implicit val core             : BrainAlg[F]           = new Brain[F]
             implicit val metricService    : MetricServiceAlg[F]   = new MetricService[F]
 

@@ -4,16 +4,16 @@ import cats.effect.{Clock, Sync}
 import cats.syntax.all._
 import io.github.oybek.gdetram.domain.model.Stop
 import io.github.oybek.plato.model.Arrival
-import io.github.oybek.plato.parser.ParserA
+import io.github.oybek.plato.parser.BustimeParser
 
 trait TabloidAlg[F[_]] {
-  def extractInfo(stop: Stop): F[List[(String, List[Arrival])]]
+  def getArrivals(stop: Stop): F[List[(String, List[Arrival])]]
 }
 
-class TabloidA[F[_]: Sync: Clock](implicit documentFetcher: DocFetcherAlg[F]) extends TabloidAlg[F] {
+class BustimeTabloid[F[_]: Sync: Clock](implicit documentFetcher: DocFetcherAlg[F]) extends TabloidAlg[F] {
 
-  override def extractInfo(stop: Stop): F[List[(String, List[Arrival])]] =
+  override def getArrivals(stop: Stop): F[List[(String, List[Arrival])]] =
     documentFetcher.fetchCached(stop.url).map { doc =>
-      doc.map(ParserA.parse).getOrElse(List())
+      doc.map(BustimeParser.parse).getOrElse(List())
     }
 }

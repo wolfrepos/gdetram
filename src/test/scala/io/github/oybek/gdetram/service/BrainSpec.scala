@@ -47,7 +47,7 @@ class BrainSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonn
       .when(*, *)
       .returns(IO { Some(User(Vk, 123, City(1, "city", 0.0f, 0.0f))) })
 
-    (extractor.extractInfo _)
+    (extractor.getArrivals _)
       .when(stop)
       .returns(IO { List("Гагарина" -> List(Arrival("25", 5 minutes, Bus))) })
 

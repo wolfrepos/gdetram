@@ -111,7 +111,7 @@ class Brain[F[_]: Sync: Concurrent: Timer](implicit
 
   private def getTabloid(stop: Stop) = {
     tabloid
-      .extractInfo(stop)
+      .getArrivals(stop)
       .map {
         case Nil => s"На остановку ${stop.name} сейчас ничего не едет"
         case l =>
