@@ -1,6 +1,6 @@
 package io.github.oybek.gdetram.domain
 
-trait Phrases {
+object Phrases {
 
   def cityChosen(cityName: String, cityNames: List[String]): String =
     s"""
@@ -14,13 +14,17 @@ trait Phrases {
        |${cityNames.sorted.mkString(", ")}
        |""".stripMargin
 
-  def cityAsk(cityNames: List[String]): String =
+  def cityAsk: String =
     s"""
       |Подскажи в каком ты городе?
       |Или просто отправь геопозицию
-      |
-      |Доступные города:
-      |${cityNames.sorted.mkString(", ")}
       |""".stripMargin
+
+  val cantFindCity: String =
+    s"""
+       |Не нашел такой город 😟
+       |Попробуйте еще раз
+       |Или просто отправь геопозицию
+       |""".stripMargin
 
 }

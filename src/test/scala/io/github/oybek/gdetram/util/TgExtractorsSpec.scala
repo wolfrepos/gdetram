@@ -15,7 +15,7 @@ class TgExtractorsSpec extends AnyFlatSpec with Matchers with TgExtractors {
       location = Some(location)
     )
     (message match {
-      case Location(location) => Some(location)
+      case LocationMessage(location) => Some(location)
       case _                  => None
     }) should be(Some(location))
   }

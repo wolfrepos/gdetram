@@ -6,18 +6,20 @@ import cats.effect.syntax.all._
 import cats.effect.{Async, Clock, Concurrent, Sync, Timer}
 import cats.syntax.all._
 import io.github.oybek.gdetram.db.repository.JournalRepoAlg
-import io.github.oybek.gdetram.domain.BrainAlg
+import io.github.oybek.gdetram.domain.CoreAlg
+import io.github.oybek.gdetram.domain.chain.model.{Geo, Text}
 import io.github.oybek.gdetram.domain.model.Platform.Vk
 import io.github.oybek.gdetram.util.Formatting._
 import io.github.oybek.vk4s.api._
-import io.github.oybek.vk4s.domain.{AudioMessage, Geo, LongPollBot, MessageNew, WallPostNew, WallReplyNew}
+import io.github.oybek.vk4s.domain.{AudioMessage, LongPollBot, MessageNew, WallPostNew, WallReplyNew}
 import io.github.oybek.vk4s.api.{GetLongPollServerReq, Keyboard, SendMessageReq}
 import org.http4s.client.Client
 import org.slf4j.{Logger, LoggerFactory}
+
 import scala.concurrent.duration._
 
 class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollServerReq)(implicit httpClient: Client[F],
-                                                                                        core: BrainAlg[F],
+                                                                                        core: CoreAlg[F],
                                                                                         vkApi: VkApi[F])
     extends LongPollBot[F](httpClient, vkApi, getLongPollServerReq) {
 
@@ -26,9 +28,9 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
   override def onMessageNew(message: MessageNew): F[Unit] = (
     Sync[F].delay { log.info(s"got message $message") } >> (
       message match {
-        case MessageNew(_, _, peerId, _, _, Some(Geo(coord, _)), _) =>
+        case MessageNew(_, _, peerId, _, _, Some(geo), _) =>
           for {
-            answer <- core.handleGeo(Vk -> peerId, coord)
+            answer <- core.handle(Vk -> peerId)(Geo(geo.coordinates.latitude, geo.coordinates.longitude))
             _ <- sendMessage(Left(peerId), text = answer._1, keyboard = answer._2.toVk.some)
           } yield ()
 
@@ -48,13 +50,13 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
               case Some(AudioMessage(_, _, _, _, _, Some(text))) => text
               case _ => "Cannot recognize speech"
             }
-            answer <- core.handleText(Vk -> peerId, text)
+            answer <- core.handle(Vk -> peerId)(Text(text))
             _ <- sendMessage(Left(peerId), text = answer._1, keyboard = answer._2.toVk.some)
           } yield ()
 
         case MessageNew(_, _, peerId, _, text, _, _) =>
           for {
-            answer <- core.handleText(Vk -> peerId, text)
+            answer <- core.handle(Vk -> peerId)(Text(text))
             _ <- sendMessage(
               Left(peerId),
               text = answer._1,

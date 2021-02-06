@@ -10,8 +10,8 @@ import io.github.oybek.gdetram.config.Config
 import io.github.oybek.gdetram.db.DB
 import io.github.oybek.gdetram.db.repository._
 import io.github.oybek.gdetram.domain.model.Platform.{Tg, Vk}
-import io.github.oybek.gdetram.domain.{Brain, BrainAlg}
-import io.github.oybek.gdetram.service.{DocFetcherAlg, BustimeTabloid}
+import io.github.oybek.gdetram.domain.{Core, CoreAlg}
+import io.github.oybek.gdetram.service.{BustimeTabloid, DocFetcherAlg}
 import io.github.oybek.gdetram.service._
 import io.github.oybek.gdetram.util.TimeTools._
 import io.github.oybek.vk4s.api.{GetConversationsReq, GetLongPollServerReq, Unanswered, VkApi, VkApiHttp4s}
@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory
 import telegramium.bots.high.{Api, BotApi}
 import doobie.ExecutionContexts
 import io.github.oybek.gdetram.db.migration.migrations
+import io.github.oybek.gdetram.domain.chain.{CityHandler, FirstHandler, PsHandler, StopHandler}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.duration._
@@ -43,36 +44,45 @@ object Main extends IOApp {
       _ <- resources(config)
         .use {
           case (transactor, httpClient, blocker) =>
-            implicit val client           : Client[F]             = Logger(logHeaders = false, logBody = false)(httpClient)
-            implicit val cityRepo         : CityRepoAlg[F]        = new CityRepo[F](transactor)
-            implicit val journalRepo      : JournalRepoAlg[F]     = new JournalRepo(transactor)
-            implicit val stopRepo         : StopRepoAlg[F]        = new StopRepo(transactor)
-            implicit val userRepo         : UserRepoAlg[F]        = new UserRepo[F](transactor)
-            implicit val documentFetcher  : DocFetcherAlg[F]      = new DocFetcher[F]
-            implicit val messageRepo      : MessageRepoAlg[F]     = new MessageRepo[F](transactor)
-            implicit val vkBotApi         : VkApi[F]              = new VkApiHttp4s[F](client)
-            implicit val tgBotApi         : Api[F]                = new BotApi[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}", blocker)
-            implicit val source1          : TabloidAlg[F]         = new BustimeTabloid[F]
-            implicit val core             : BrainAlg[F]           = new Brain[F]
-            implicit val metricService    : MetricServiceAlg[F]   = new MetricService[F]
+            implicit val client          : Client[F]           = Logger(logHeaders = false, logBody = false)(httpClient)
+
+            implicit val cityRepo        : CityRepoAlg[F]      = new CityRepo[F](transactor)
+            implicit val journalRepo     : JournalRepoAlg[F]   = new JournalRepo(transactor)
+            implicit val stopRepo        : StopRepoAlg[F]      = new StopRepo(transactor)
+            implicit val userRepo        : UserRepoAlg[F]      = new UserRepo[F](transactor)
+            implicit val messageRepo     : MessageRepoAlg[F]   = new MessageRepo[F](transactor)
+
+            implicit val documentFetcher : DocFetcherAlg[F]    = new DocFetcher[F]
+            implicit val source1         : TabloidAlg[F]       = new BustimeTabloid[F]
+
+            implicit val firstHandler    : FirstHandler[F]     = new FirstHandler[F]
+            implicit val cityHandler     : CityHandler[F]      = new CityHandler[F]
+            implicit val stopHandler     : StopHandler[F]      = new StopHandler[F]
+            implicit val psHandler       : PsHandler[F]        = new PsHandler[F]
+
+            implicit val core            : CoreAlg[F]          = new Core[F]
+            implicit val metricService   : MetricServiceAlg[F] = new MetricService[F]
+
+            implicit val vkBotApi        : VkApi[F]            = new VkApiHttp4s[F](client)
+            implicit val tgBotApi        : Api[F]              = new BotApi[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}", blocker)
 
             implicit val vkBot: VkBot[F] = new VkBot[F](config.getLongPollServerReq)
             implicit val tgBot: TgBot[F] = new TgBot[F](config.adminTgIds.split(",").map(_.trim).toList)
 
             for {
               _ <- migrations.exec[F](transactor, Some(x => Sync[F].delay(log.info(x))))
-              f1 <- vkBot.start.start
+              //f1 <- vkBot.start.start
               f2 <- tgBot.start.start
 
               _ <- tgBot.dailyReports("Ну что уебаны?! Готовы к метрикам?".some).everyDayAt(8, 0).start
 
               _ <- spamTg(messageRepo).start.void
-              _ <- spamVk(messageRepo).start.void
+              //_ <- spamVk(messageRepo).start.void
 
-              _ <- vkRevoke(vkBotApi, vkBot, config.getLongPollServerReq)
-                .every(10.seconds, (9, 24)).start.void
+              //_ <- vkRevoke(vkBotApi, vkBot, config.getLongPollServerReq)
+              //  .every(10.seconds, (9, 24)).start.void
 
-              _ <- f1.join
+              //_ <- f1.join
               _ <- f2.join
             } yield ()
         }

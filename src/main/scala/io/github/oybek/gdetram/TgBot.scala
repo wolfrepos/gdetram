@@ -5,7 +5,8 @@ import cats.effect.{Async, Concurrent, Sync, Timer}
 import cats.syntax.all._
 import cats.instances.option._
 import io.github.oybek.gdetram.db.repository.JournalRepoAlg
-import io.github.oybek.gdetram.domain.BrainAlg
+import io.github.oybek.gdetram.domain.chain.model.{Geo, Text}
+import io.github.oybek.gdetram.domain.{CoreAlg, chain}
 import io.github.oybek.gdetram.domain.model.Platform.Tg
 import io.github.oybek.gdetram.service.MetricServiceAlg
 import io.github.oybek.gdetram.util.TgExtractors
@@ -18,7 +19,7 @@ import scala.concurrent.duration.DurationInt
 
 class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
                                            (implicit bot: Api[F],
-                                            core: BrainAlg[F],
+                                            core: CoreAlg[F],
                                             journalRepo: JournalRepoAlg[F],
                                             metricService: MetricServiceAlg[F])
     extends LongPollBot[F](bot)
@@ -37,7 +38,7 @@ class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
     Sync[F].delay { log.info(s"got query: $query") } >> (query match {
       case CallbackQuery(_, _, Some(message), _, _, Some(text), _) =>
         for {
-          reply <- core.handleText(Tg -> message.chat.id, text)
+          reply <- core.handle(Tg -> message.chat.id)(Text(text))
           _ <- Methods.editMessageText(
             chatId = ChatIntId(message.chat.id).some,
             messageId = message.messageId.some,
@@ -52,16 +53,17 @@ class TgBot[F[_]: Async: Timer: Concurrent](adminIds: List[String])
 
   override def onMessage(message: Message): F[Unit] = (
     Sync[F].delay { log.info(s"got message: $message") } >> (message match {
-      case Location(location) =>
+      case LocationMessage(location) =>
         core
-          .handleGeo(Tg -> message.chat.id, Coord(location.latitude, location.longitude))
+          .handle(Tg -> message.chat.id)(Geo(location.latitude, location.longitude))
           .flatMap(reply => send(message.chat.id, reply._1, Some(reply._2.toTg)))
 
-      case Text("/stat" | "/stat@gdetrambot") => dailyReports("Тебе хуемразь отдельно повторить?!".some)
+      case TextMessage("/stat" | "/stat@gdetrambot") =>
+        dailyReports("Тебе хуемразь отдельно повторить?!".some)
 
-      case Text(text) =>
+      case TextMessage(text) =>
         core
-          .handleText(Tg -> message.chat.id, text)
+          .handle(Tg -> message.chat.id)(Text(text))
           .flatMap(reply => send(message.chat.id, reply._1, Some(reply._2.toTg)))
 
       case _ =>

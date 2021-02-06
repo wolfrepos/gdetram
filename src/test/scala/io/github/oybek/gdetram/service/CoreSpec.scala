@@ -1,23 +1,23 @@
 package io.github.oybek.gdetram.service
 
-import cats.data.NonEmptyList
 import cats.effect.IO
-import cats.effect.concurrent.Ref
 import doobie.util.ExecutionContexts
-import io.github.oybek.gdetram.db.repository.{CityRepoAlg, JournalRepoAlg, MessageRepoAlg, StopRepoAlg, UserRepoAlg}
+import io.github.oybek.gdetram.db.repository._
 import io.github.oybek.gdetram.donnars.StopDonnar
 import io.github.oybek.gdetram.domain.model.Platform.Vk
 import io.github.oybek.gdetram.domain.model.{City, Stop, User}
-import io.github.oybek.plato.model.TransportT.{Bus, Tram, Troll}
+import io.github.oybek.plato.model.TransportT._
 import io.github.oybek.plato.model.{Arrival, TransportT}
-import io.github.oybek.gdetram.domain.Brain
+import io.github.oybek.gdetram.domain.Core
+import io.github.oybek.gdetram.domain.chain.model.Text
+import io.github.oybek.gdetram.domain.chain.{CityHandler, FirstHandler, PsHandler, StopHandler}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.duration._
 
-class BrainSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonnar {
+class CoreSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonnar {
   implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
   implicit val tm = IO.timer(ExecutionContexts.synchronous)
 
@@ -27,6 +27,11 @@ class BrainSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonn
   implicit val extractor = stub[TabloidAlg[IO]]
   implicit val cityRepo = stub[CityRepoAlg[IO]]
   implicit val userRepo = stub[UserRepoAlg[IO]]
+
+  implicit val firstHandler = new FirstHandler[IO]
+  implicit val cityHandler = new CityHandler[IO]
+  implicit val stopHandler = new StopHandler[IO]
+  implicit val psHandler = new PsHandler[IO]
 
   private val rightArrow = "➡️"
 
@@ -60,8 +65,8 @@ class BrainSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonn
       .returns(IO { None })
 
     // action
-    val core = new Brain[IO]
-    val result = core.handleText(Vk -> 123, "Дом кино")
+    val core = new Core[IO]
+    val result = core.handle(Vk -> 123)(Text("Дом кино"))
 
     // check
     result.unsafeRunSync()._1 shouldBe
@@ -78,7 +83,7 @@ class BrainSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonn
       .when(*)
       .returns(IO { None })
 
-    val core = new Brain[IO]
+    val core = new Core[IO]
 
     // TODO: complete the test
   }
