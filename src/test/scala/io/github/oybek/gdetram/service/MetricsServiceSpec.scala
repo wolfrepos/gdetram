@@ -2,8 +2,8 @@ package io.github.oybek.gdetram.service
 
 import cats.effect.IO
 import io.github.oybek.gdetram.db.repository.UserRepoAlg
-import io.github.oybek.gdetram.domain.model.Platform.{Tg, Vk}
-import io.github.oybek.gdetram.domain.model.{City, User, UserInfo}
+import io.github.oybek.gdetram.model.Platform.{Tg, Vk}
+import io.github.oybek.gdetram.model.{City, User, UserInfo}
 import io.github.oybek.gdetram.donnars.StopDonnar
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.flatspec.AnyFlatSpec

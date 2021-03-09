@@ -4,7 +4,7 @@ import doobie.util.query.Query0
 import doobie.util.update.Update0
 import doobie.implicits._
 import doobie.implicits.javasql._
-import io.github.oybek.gdetram.domain.model.{City, Platform, PsMessage, Record, Stop, User, UserInfo}
+import io.github.oybek.gdetram.model.{City, Platform, PsMessage, Record, Stop, User, UserInfo}
 
 object Queries {
 

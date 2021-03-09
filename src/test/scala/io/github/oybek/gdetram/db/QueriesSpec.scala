@@ -6,9 +6,9 @@ import doobie.scalatest.IOChecker
 import doobie.util.ExecutionContexts
 import doobie.util.transactor.Transactor
 import io.github.oybek.gdetram.db.repository.Queries
-import io.github.oybek.gdetram.domain.model
-import io.github.oybek.gdetram.domain.model.Platform.{Tg, Vk}
-import io.github.oybek.gdetram.domain.model.Record
+import io.github.oybek.gdetram.model
+import io.github.oybek.gdetram.model.Platform.{Tg, Vk}
+import io.github.oybek.gdetram.model.Record
 import org.flywaydb.core.Flyway
 import org.scalatest.funsuite.AnyFunSuite
 

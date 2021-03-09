@@ -1,11 +1,12 @@
-package io.github.oybek.gdetram.domain.chain
+package io.github.oybek.gdetram.domain.handler
 
 import cats.{Applicative, Monad}
 import cats.implicits._
 import cats.effect._
 import io.github.oybek.gdetram.db.repository._
-import io.github.oybek.gdetram.domain.chain.model._
-import io.github.oybek.gdetram.domain.model._
+import io.github.oybek.gdetram.domain.Text
+import io.github.oybek.gdetram.domain.handler.model._
+import io.github.oybek.gdetram.model._
 import io.github.oybek.gdetram.service.TabloidAlg
 import io.github.oybek.gdetram.util.Formatting
 

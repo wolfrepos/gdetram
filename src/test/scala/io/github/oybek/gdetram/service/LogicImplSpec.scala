@@ -4,20 +4,19 @@ import cats.effect.IO
 import doobie.util.ExecutionContexts
 import io.github.oybek.gdetram.db.repository._
 import io.github.oybek.gdetram.donnars.StopDonnar
-import io.github.oybek.gdetram.domain.model.Platform.Vk
-import io.github.oybek.gdetram.domain.model.{City, Stop, User}
+import io.github.oybek.gdetram.model.Platform.Vk
+import io.github.oybek.gdetram.model.{City, Stop, User}
 import io.github.oybek.plato.model.TransportT._
 import io.github.oybek.plato.model.{Arrival, TransportT}
-import io.github.oybek.gdetram.domain.Core
-import io.github.oybek.gdetram.domain.chain.model.Text
-import io.github.oybek.gdetram.domain.chain.{CityHandler, FirstHandler, PsHandler, StopHandler}
+import io.github.oybek.gdetram.domain.{LogicImpl, Text}
+import io.github.oybek.gdetram.domain.handler.{CityHandler, FirstHandler, PsHandler, StopHandler}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.duration._
 
-class CoreSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonnar {
+class LogicImplSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonnar {
   implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
   implicit val tm = IO.timer(ExecutionContexts.synchronous)
 
@@ -65,7 +64,7 @@ class CoreSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonna
       .returns(IO { None })
 
     // action
-    val core = new Core[IO]
+    val core = new LogicImpl[IO]
     val result = core.handle(Vk -> 123)(Text("Дом кино"))
 
     // check
@@ -83,7 +82,7 @@ class CoreSpec extends AnyFlatSpec with Matchers with MockFactory with StopDonna
       .when(*)
       .returns(IO { None })
 
-    val core = new Core[IO]
+    val core = new LogicImpl[IO]
 
     // TODO: complete the test
   }

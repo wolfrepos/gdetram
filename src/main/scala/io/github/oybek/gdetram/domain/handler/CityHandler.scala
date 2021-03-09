@@ -1,11 +1,12 @@
-package io.github.oybek.gdetram.domain.chain
+package io.github.oybek.gdetram.domain.handler
 
 import cats.effect.Sync
 import cats.implicits._
 import io.github.oybek.gdetram.db.repository._
+import io.github.oybek.gdetram.domain.{Geo, Input, Text}
 import io.github.oybek.gdetram.domain.Phrases._
-import io.github.oybek.gdetram.domain.chain.model._
-import io.github.oybek.gdetram.domain.model._
+import io.github.oybek.gdetram.domain.handler.model._
+import io.github.oybek.gdetram.model._
 
 class CityHandler[F[_]: Sync](implicit
                               cityRepo: CityRepoAlg[F],

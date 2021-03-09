@@ -9,8 +9,8 @@ import doobie.hikari.HikariTransactor
 import io.github.oybek.gdetram.config.Config
 import io.github.oybek.gdetram.db.DB
 import io.github.oybek.gdetram.db.repository._
-import io.github.oybek.gdetram.domain.model.Platform.{Tg, Vk}
-import io.github.oybek.gdetram.domain.{Core, CoreAlg}
+import io.github.oybek.gdetram.model.Platform.{Tg, Vk}
+import io.github.oybek.gdetram.domain.{LogicImpl, Logic}
 import io.github.oybek.gdetram.service.{BustimeTabloid, DocFetcherAlg}
 import io.github.oybek.gdetram.service._
 import io.github.oybek.gdetram.util.TimeTools._
@@ -22,7 +22,7 @@ import org.http4s.client.middleware.Logger
 import org.slf4j.LoggerFactory
 import telegramium.bots.high.{Api, BotApi}
 import doobie.ExecutionContexts
-import io.github.oybek.gdetram.domain.chain.{CityHandler, FirstHandler, PsHandler, StopHandler}
+import io.github.oybek.gdetram.domain.handler.{CityHandler, FirstHandler, PsHandler, StopHandler}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.duration._
@@ -58,7 +58,7 @@ object Main extends IOApp {
             implicit val stopHandler     : StopHandler[F]      = new StopHandler[F]
             implicit val psHandler       : PsHandler[F]        = new PsHandler[F]
 
-            implicit val core            : CoreAlg[F]          = new Core[F]
+            implicit val core            : Logic[F]          = new LogicImpl[F]
             implicit val metricService   : MetricServiceAlg[F] = new MetricService[F]
 
             implicit val vkBotApi        : VkApi[F]            = new VkApiHttp4s[F](client)

@@ -6,7 +6,7 @@ import doobie.util.transactor.Transactor
 import doobie.util.update.Update0
 import doobie.implicits._
 import doobie.util.query.Query0
-import io.github.oybek.gdetram.domain.model._
+import io.github.oybek.gdetram.model._
 
 trait UserRepoAlg[F[_]] {
   def upsert(user: User): F[Int]

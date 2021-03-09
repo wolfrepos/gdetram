@@ -5,8 +5,8 @@ import java.sql.Timestamp
 import cats.syntax.all._
 import cats.effect.Sync
 import io.github.oybek.gdetram.db.repository.UserRepoAlg
-import io.github.oybek.gdetram.domain.model.Platform._
-import io.github.oybek.gdetram.domain.model.UserInfo
+import io.github.oybek.gdetram.model.Platform._
+import io.github.oybek.gdetram.model.UserInfo
 
 import java.time.LocalDateTime
 
