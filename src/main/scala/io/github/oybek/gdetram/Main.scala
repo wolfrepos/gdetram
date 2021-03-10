@@ -47,7 +47,7 @@ object Main extends IOApp {
             implicit val cityRepo        : CityRepoAlg[F]      = new CityRepo[F](transactor)
             implicit val journalRepo     : JournalRepoAlg[F]   = new JournalRepo(transactor)
             implicit val stopRepo        : StopRepoAlg[F]      = new StopRepo(transactor)
-            implicit val userRepo        : UserRepoAlg[F]      = new UserRepo[F](transactor)
+            implicit val userRepo        : UserRepo[F]      = new UserRepoImpl[F](transactor)
             implicit val messageRepo     : MessageRepoAlg[F]   = new MessageRepo[F](transactor)
 
             implicit val documentFetcher : DocFetcherAlg[F]    = new DocFetcher[F]

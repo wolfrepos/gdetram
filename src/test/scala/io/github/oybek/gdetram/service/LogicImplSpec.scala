@@ -25,7 +25,7 @@ class LogicImplSpec extends AnyFlatSpec with Matchers with MockFactory with Stop
   implicit val stopRepo = stub[StopRepoAlg[IO]]
   implicit val extractor = stub[TabloidService[IO]]
   implicit val cityRepo = stub[CityRepoAlg[IO]]
-  implicit val userRepo = stub[UserRepoAlg[IO]]
+  implicit val userRepo = stub[UserRepo[IO]]
 
   implicit val firstHandler = new FirstHandler[IO]
   implicit val cityHandler = new CityHandler[IO]
@@ -43,13 +43,17 @@ class LogicImplSpec extends AnyFlatSpec with Matchers with MockFactory with Stop
       .when("Дом кино", 1)
       .returns(IO { Some(stop -> 0) })
 
-    (() => cityRepo.selectAllCitiesNames)
+    (() => cityRepo.selectAll)
       .when()
-      .returns(IO { List("hello") })
+      .returns(IO { List(City(1, "city", 0.0f, 0.0f)) })
 
-    (userRepo.selectUser _)
+    (userRepo.select _)
       .when(*, *)
-      .returns(IO { Some(User(Vk, 123, City(1, "city", 0.0f, 0.0f))) })
+      .returns(IO { Some(User(Vk, 123, 1, None, 0)) })
+
+    (cityRepo.select _)
+      .when(*)
+      .returns(IO { City(1, "city", 0.0f, 0.0f) })
 
     (extractor.getArrivals _)
       .when(stop)

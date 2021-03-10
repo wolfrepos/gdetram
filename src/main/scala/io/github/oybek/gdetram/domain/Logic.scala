@@ -19,8 +19,8 @@ class LogicImpl[F[_]: Sync: Concurrent: Timer](implicit
   def handle(userId: UserId)(input: Input): F[Reply] = (
     for {
       _            <- EitherT(firstHandler.handle(input))
-      (city, text) <- EitherT(cityHandler.handle(userId, input))
-      (text, kbrd) <- EitherT(stopHandler.handle(userId, city, text))
+      city         <- EitherT(cityHandler.handle(userId, input))
+      (text, kbrd) <- EitherT(stopHandler.handle(userId, city, input))
       psText       <- EitherT(psHandler.handle(userId))
       result = (text + psText.fold("")("\n" + _), kbrd)
     } yield result

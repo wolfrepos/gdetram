@@ -6,17 +6,26 @@ import doobie.util.transactor.Transactor
 import io.github.oybek.gdetram.model.City
 
 trait CityRepoAlg[F[_]] {
-  def selectCity(query: String): F[(City, Int)]
-  def selectAllCitiesNames: F[List[String]]
+  def select(cityId: Int): F[City]
+  def selectAll: F[List[City]]
+
+  def find(query: String): F[(City, Int)]
 }
 
 class CityRepo[F[_]: Sync](transactor: Transactor[F]) extends CityRepoAlg[F] {
-  def selectCity(query: String): F[(City, Int)] =
+  def select(cityId: Int): F[City] =
+    Queries
+      .selectCityQuery(cityId)
+      .unique
+      .transact(transactor)
+
+  def selectAll: F[List[City]] =
+    Queries.selectAllCitites.to[List].transact(transactor)
+
+
+  def find(query: String): F[(City, Int)] =
     Queries
       .selectMostMatchedCity(query)
       .unique
       .transact(transactor)
-
-  def selectAllCitiesNames: F[List[String]] =
-    Queries.selectAllCitites.to[List].transact(transactor)
 }

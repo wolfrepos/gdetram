@@ -1,8 +1,4 @@
 
-create table stop_ads (
-    stop_id  integer references stop(id),
-    time     timestamp not null,
-    platform platform not null,
-    user_id  varchar not null,
-    text     varchar not null
-);
+alter table usr rename to user_info;
+alter table user_info add column last_stop_id integer references stop(id);
+alter table user_info add column last_month_active_days integer not null default 0;
