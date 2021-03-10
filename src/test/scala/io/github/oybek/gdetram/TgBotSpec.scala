@@ -10,7 +10,7 @@ import io.github.oybek.gdetram.db.DB
 import io.github.oybek.gdetram.db.repository.{CityRepo, CityRepoAlg, JournalRepo, MessageRepo, MessageRepoAlg, StopRepo, StopRepoAlg, UserRepo, UserRepoAlg}
 import io.github.oybek.gdetram.domain.LogicImpl
 import io.github.oybek.gdetram.donnars.StopDonnar
-import io.github.oybek.gdetram.service.{MetricService, TabloidAlg}
+import io.github.oybek.gdetram.service.{MetricService, TabloidService}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

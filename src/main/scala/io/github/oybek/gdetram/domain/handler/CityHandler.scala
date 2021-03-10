@@ -5,7 +5,6 @@ import cats.implicits._
 import io.github.oybek.gdetram.db.repository._
 import io.github.oybek.gdetram.domain.{Geo, Input, Text}
 import io.github.oybek.gdetram.domain.Phrases._
-import io.github.oybek.gdetram.domain.handler.model._
 import io.github.oybek.gdetram.model._
 
 class CityHandler[F[_]: Sync](implicit

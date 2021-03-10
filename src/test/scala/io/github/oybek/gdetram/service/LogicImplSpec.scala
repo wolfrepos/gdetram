@@ -23,7 +23,7 @@ class LogicImplSpec extends AnyFlatSpec with Matchers with MockFactory with Stop
   implicit val journalRepo = stub[JournalRepoAlg[IO]]
   implicit val PSService = stub[MessageRepoAlg[IO]]
   implicit val stopRepo = stub[StopRepoAlg[IO]]
-  implicit val extractor = stub[TabloidAlg[IO]]
+  implicit val extractor = stub[TabloidService[IO]]
   implicit val cityRepo = stub[CityRepoAlg[IO]]
   implicit val userRepo = stub[UserRepoAlg[IO]]
 

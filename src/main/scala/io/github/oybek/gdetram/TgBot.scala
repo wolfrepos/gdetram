@@ -5,7 +5,6 @@ import cats.effect.{Async, Concurrent, Sync, Timer}
 import cats.syntax.all._
 import cats.instances.option._
 import io.github.oybek.gdetram.db.repository.JournalRepoAlg
-import io.github.oybek.gdetram.domain.handler.model.Geo
 import io.github.oybek.gdetram.domain.{Logic, Geo, Text, handler}
 import io.github.oybek.gdetram.model.Platform.Tg
 import io.github.oybek.gdetram.service.MetricServiceAlg

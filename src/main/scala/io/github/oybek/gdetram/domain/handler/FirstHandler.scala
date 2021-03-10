@@ -4,7 +4,6 @@ import cats.Applicative
 import cats.implicits.{catsSyntaxApplicativeId, catsSyntaxEitherId}
 import io.github.oybek.gdetram.domain.{Input, Text}
 import io.github.oybek.gdetram.domain.Phrases.cityAsk
-import io.github.oybek.gdetram.domain.handler.model.Text
 import io.github.oybek.gdetram.model.{Button, Platform}
 
 class FirstHandler[F[_]: Applicative] extends Handler[F, Input, Unit] {

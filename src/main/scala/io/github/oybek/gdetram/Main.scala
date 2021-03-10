@@ -11,7 +11,7 @@ import io.github.oybek.gdetram.db.DB
 import io.github.oybek.gdetram.db.repository._
 import io.github.oybek.gdetram.model.Platform.{Tg, Vk}
 import io.github.oybek.gdetram.domain.{LogicImpl, Logic}
-import io.github.oybek.gdetram.service.{BustimeTabloid, DocFetcherAlg}
+import io.github.oybek.gdetram.service.{TabloidServiceBustimeImpl, DocFetcherAlg}
 import io.github.oybek.gdetram.service._
 import io.github.oybek.gdetram.util.TimeTools._
 import io.github.oybek.vk4s.api.{GetConversationsReq, GetLongPollServerReq, Unanswered, VkApi, VkApiHttp4s}
@@ -51,7 +51,7 @@ object Main extends IOApp {
             implicit val messageRepo     : MessageRepoAlg[F]   = new MessageRepo[F](transactor)
 
             implicit val documentFetcher : DocFetcherAlg[F]    = new DocFetcher[F]
-            implicit val source1         : TabloidAlg[F]       = new BustimeTabloid[F]
+            implicit val source1         : TabloidService[F]       = new TabloidServiceBustimeImpl[F]
 
             implicit val firstHandler    : FirstHandler[F]     = new FirstHandler[F]
             implicit val cityHandler     : CityHandler[F]      = new CityHandler[F]

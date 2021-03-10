@@ -6,11 +6,11 @@ import io.github.oybek.gdetram.model.Stop
 import io.github.oybek.plato.model.Arrival
 import io.github.oybek.plato.parser.BustimeParser
 
-trait TabloidAlg[F[_]] {
+trait TabloidService[F[_]] {
   def getArrivals(stop: Stop): F[List[(String, List[Arrival])]]
 }
 
-class BustimeTabloid[F[_]: Sync: Clock](implicit documentFetcher: DocFetcherAlg[F]) extends TabloidAlg[F] {
+class TabloidServiceBustimeImpl[F[_]: Sync: Clock](implicit documentFetcher: DocFetcherAlg[F]) extends TabloidService[F] {
 
   override def getArrivals(stop: Stop): F[List[(String, List[Arrival])]] =
     documentFetcher.fetchCached(stop.url).map { doc =>

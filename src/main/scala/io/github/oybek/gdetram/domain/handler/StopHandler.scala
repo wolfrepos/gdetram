@@ -5,9 +5,8 @@ import cats.implicits._
 import cats.effect._
 import io.github.oybek.gdetram.db.repository._
 import io.github.oybek.gdetram.domain.Text
-import io.github.oybek.gdetram.domain.handler.model._
 import io.github.oybek.gdetram.model._
-import io.github.oybek.gdetram.service.TabloidAlg
+import io.github.oybek.gdetram.service.TabloidService
 import io.github.oybek.gdetram.util.Formatting
 
 import java.sql.Timestamp
@@ -15,7 +14,7 @@ import java.sql.Timestamp
 class StopHandler[F[_] : Applicative: Monad: Timer](implicit
                                                     stopRepo: StopRepoAlg[F],
                                                     journalRepo: JournalRepoAlg[F],
-                                                    tabloid: TabloidAlg[F]) extends Handler[F, (UserId, City, Text), Reply] {
+                                                    tabloid: TabloidService[F]) extends Handler[F, (UserId, City, Text), Reply] {
 
   val handle: ((UserId, City, Text)) => F[Either[Reply, Reply]] = {
     case (userId, city, Text(userText)) =>
