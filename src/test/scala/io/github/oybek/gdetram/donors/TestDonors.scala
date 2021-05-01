@@ -1,5 +1,6 @@
 package io.github.oybek.gdetram.donors
 
+import cats.data.NonEmptyList
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator._
 import io.github.oybek.gdetram.model.{City, Record, Stop, User}
 import io.github.oybek.gdetram.service.UserId
@@ -11,14 +12,18 @@ import org.scalacheck.{Arbitrary, Gen}
 import java.sql.Timestamp
 
 object TestDonors {
-  val randomCity        = random[City]
-  val randomGeoMessage  = random[Geo]
-  val randomMessage     = random[Message]
-  val randomRecord      = random[Record]
-  val randomStop        = random[Stop]
-  val randomTextMessage = random[Text]
-  val randomUser        = random[User]
-  val randomUserId      = random[UserId]
+  val randomCity: City                 = random[City]
+  val randomCities: NonEmptyList[City] = NonEmptyList.fromListUnsafe(random[City](100).toList.distinctBy(_.id))
+  val randomGeoMessage: Geo            = random[Geo]
+  val randomMessage: Message           = random[Message]
+  val randomRecord: Record             = random[Record]
+  val randomStop: Stop                 = random[Stop]
+  val randomTextMessage: Text          = random[Text]
+  val randomUser: User                 = random[User]
+  val randomUserId: UserId             = random[UserId]
+
+  implicit lazy val arbitraryFloat: Arbitrary[Float] =
+    chooseNum(-100f, +100f).arb
 
   implicit lazy val arbitraryTimestamp: Arbitrary[Timestamp] =
     chooseNum(
