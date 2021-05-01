@@ -14,7 +14,7 @@ object Dependencies {
     val doobie = "0.8.8"
     val jsoup = "1.7.2"
     val telegramium = "2.49.0"
-    val mock = "4.4.0"
+    val mock = "5.1.0"
     val mockTest = "3.1.0"
     val flyway = "7.5.4"
     val randomDataGenerator = "2.9"

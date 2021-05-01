@@ -1,7 +1,7 @@
 package io.github.oybek.gdetram.dao
 
 import doobie.scalatest.IOChecker
-import io.github.oybek.gdetram.donors.TestDonors.randomGeo
+import io.github.oybek.gdetram.donors.TestDonors.randomGeoMessage
 import org.scalatest.funsuite.AnyFunSuite
 
 class CityRepoQueriesSpec extends AnyFunSuite with IOChecker with PostgresSetup {
@@ -9,6 +9,6 @@ class CityRepoQueriesSpec extends AnyFunSuite with IOChecker with PostgresSetup 
     check(CityRepoImpl.select(1))
     check(CityRepoImpl.selectAll)
     check(CityRepoImpl.selectMostMatched("name"))
-    check(CityRepoImpl.selectNearest(randomGeo))
+    check(CityRepoImpl.selectNearest(randomGeoMessage))
   }
 }
