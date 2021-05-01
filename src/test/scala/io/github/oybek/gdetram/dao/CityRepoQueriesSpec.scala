@@ -32,7 +32,10 @@ class CityRepoQueriesSpec extends AnyFunSuite with IOChecker with PostgresSetup 
         city shouldBe sampleCity
         mistakeNum shouldBe 0
       }
-      _ <- CityRepoImpl.getNearest(Geo(sampleCity.latitude, sampleCity.longitude)).map(_ shouldBe sampleCity)
+      _ <- CityRepoImpl.getNearest(Geo(sampleCity.latitude, sampleCity.longitude)).map { city =>
+        (city.latitude - sampleCity.latitude) < 0.001 shouldBe true
+        (city.longitude - sampleCity.longitude) < 0.001 shouldBe true
+      }
     } yield ()).transact(transactor).unsafeRunSync()
   }
 
