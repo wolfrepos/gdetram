@@ -8,6 +8,7 @@ import doobie.scalatest.IOChecker
 import doobie.{ConnectionIO, Update}
 import io.github.oybek.gdetram.donors.TestDonors.{randomCities, randomGeoMessage}
 import io.github.oybek.gdetram.model.City
+import io.github.oybek.gdetram.service.model.Message.Geo
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 
@@ -31,13 +32,7 @@ class CityRepoQueriesSpec extends AnyFunSuite with IOChecker with PostgresSetup 
         city shouldBe sampleCity
         mistakeNum shouldBe 0
       }
-      _ <- CityRepoImpl.getNearest(randomGeoMessage).map { nearestCity =>
-        val nearestFromRandomCities = shuffledRandomCities.sortBy { city =>
-          Math.pow(city.latitude - randomGeoMessage.latitude, 2) +
-            Math.pow(city.longitude - randomGeoMessage.longitude, 2)
-        }.head
-        nearestCity shouldBe nearestFromRandomCities
-      }
+      _ <- CityRepoImpl.getNearest(Geo(sampleCity.latitude, sampleCity.longitude)).map(_ shouldBe sampleCity)
     } yield ()).transact(transactor).unsafeRunSync()
   }
 
