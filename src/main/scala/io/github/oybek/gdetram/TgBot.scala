@@ -3,14 +3,13 @@ package io.github.oybek.gdetram
 import cats.Monad
 import cats.effect.syntax.all._
 import cats.effect.{Async, Concurrent, Sync, Timer}
-import cats.syntax.all._
 import cats.instances.option._
+import cats.syntax.all._
 import io.github.oybek.gdetram.dao.JournalRepo
 import io.github.oybek.gdetram.model.Platform.Tg
 import io.github.oybek.gdetram.service.model.Message.{Geo, Text}
 import io.github.oybek.gdetram.service.{Logic, MetricService}
 import io.github.oybek.gdetram.util.TgExtractors
-import io.github.oybek.vk4s.domain.Coord
 import org.slf4j.{Logger, LoggerFactory}
 import telegramium.bots.high._
 import telegramium.bots.high.implicits._
@@ -28,7 +27,6 @@ class TgBot[F[_]: Async: Timer: Concurrent, G[_]: Monad](adminIds: List[String])
   val log: Logger = LoggerFactory.getLogger("TgGate")
 
   import telegramium.bots._
-  import telegramium.bots.client._
 
   def dailyReports(preMessage: Option[String] = None, chatId: Int = -391934727): F[Unit] =
     preMessage.traverse_(send(chatId, _) >> Timer[F].sleep(2.seconds)) >>

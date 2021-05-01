@@ -1,7 +1,7 @@
-package io.github.oybek.gdetram.dao.impl
+package io.github.oybek.gdetram.dao
 
 import doobie.scalatest.IOChecker
-import io.github.oybek.gdetram.samples.TestInstances.randomGeo
+import io.github.oybek.gdetram.donors.TestDonors.randomGeo
 import org.scalatest.funsuite.AnyFunSuite
 
 class CityRepoQueriesSpec extends AnyFunSuite with IOChecker with PostgresSetup {

@@ -1,4 +1,4 @@
-package io.github.oybek.gdetram.dao.impl
+package io.github.oybek.gdetram.dao
 
 import cats.effect.{ContextShift, IO}
 import com.dimafeng.testcontainers.{ForAllTestContainer, PostgreSQLContainer}

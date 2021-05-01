@@ -1,9 +1,9 @@
-package io.github.oybek.gdetram.dao.impl
+package io.github.oybek.gdetram.dao
 
 import doobie.scalatest.IOChecker
 import io.github.oybek.gdetram.model.Platform.Tg
 import io.github.oybek.gdetram.model.{Record, User}
-import io.github.oybek.gdetram.samples.TestInstances.{randomUser, randomUserId}
+import io.github.oybek.gdetram.donors.TestDonors.{randomUser, randomUserId}
 import io.github.oybek.gdetram.service.impl.UserServiceImpl
 import io.github.oybek.gdetram.service.model.Message.Geo
 import org.scalatest.funsuite.AnyFunSuite
