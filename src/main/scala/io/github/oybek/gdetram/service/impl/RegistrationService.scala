@@ -1,6 +1,5 @@
 package io.github.oybek.gdetram.service.impl
 
-import cats.effect.Sync
 import cats.implicits._
 import cats.{Monad, ~>}
 import io.github.oybek.gdetram.dao.{CityRepo, UserRepo}
@@ -10,7 +9,7 @@ import io.github.oybek.gdetram.service.model.Message
 import io.github.oybek.gdetram.service.model.Message.{Geo, Text}
 import io.github.oybek.gdetram.service.{Handler, Reply, UserId}
 
-class RegistrationService[F[_]: Sync, G[_]: Monad](implicit
+class RegistrationService[F[_]: Monad, G[_]: Monad](implicit
                                                    cityRepo: CityRepo[G],
                                                    userRepo: UserRepo[G],
                                                    transaction: G ~> F) extends Handler[F, User] {

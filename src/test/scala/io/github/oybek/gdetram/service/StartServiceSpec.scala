@@ -3,7 +3,7 @@ package io.github.oybek.gdetram.service
 import cats.Id
 import cats.implicits.{catsSyntaxApplicativeId, catsSyntaxEitherId}
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
-import io.github.oybek.gdetram.donors.TestDonors.{randomGeo, randomUserId}
+import io.github.oybek.gdetram.donors.TestDonors.{randomGeoMessage, randomUserId}
 import io.github.oybek.gdetram.service.impl.StartService
 import io.github.oybek.gdetram.service.model.Button.GeoButton
 import io.github.oybek.gdetram.service.model.Message.Text
@@ -21,7 +21,7 @@ class StartServiceSpec extends AnyFlatSpec with Matchers {
   }
 
   it should "ignore the rest" in {
-    startService.handle(randomUserId, randomGeo) shouldBe ().asRight[Reply].pure[Id]
+    startService.handle(randomUserId, randomGeoMessage) shouldBe ().asRight[Reply].pure[Id]
     startService.handle(randomUserId, Text(random[String])) shouldBe ().asRight[Reply].pure[Id]
   }
 

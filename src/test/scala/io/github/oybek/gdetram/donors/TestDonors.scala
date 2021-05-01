@@ -1,20 +1,24 @@
 package io.github.oybek.gdetram.donors
 
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator._
-import io.github.oybek.gdetram.model.{Record, Stop, User}
+import io.github.oybek.gdetram.model.{City, Record, Stop, User}
 import io.github.oybek.gdetram.service.UserId
-import io.github.oybek.gdetram.service.model.Message.Geo
+import io.github.oybek.gdetram.service.model.Message
+import io.github.oybek.gdetram.service.model.Message.{Geo, Text}
 import org.scalacheck.Gen.chooseNum
 import org.scalacheck.{Arbitrary, Gen}
 
 import java.sql.Timestamp
 
 object TestDonors {
-  val randomGeo = random[Geo]
-  val randomUser = random[User]
-  val randomUserId = random[UserId]
-  val randomRecord = random[Record]
-  val randomStop = random[Stop]
+  val randomCity        = random[City]
+  val randomGeoMessage  = random[Geo]
+  val randomMessage     = random[Message]
+  val randomRecord      = random[Record]
+  val randomStop        = random[Stop]
+  val randomTextMessage = random[Text]
+  val randomUser        = random[User]
+  val randomUserId      = random[UserId]
 
   implicit lazy val arbitraryTimestamp: Arbitrary[Timestamp] =
     chooseNum(
