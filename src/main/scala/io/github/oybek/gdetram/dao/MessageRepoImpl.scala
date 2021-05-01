@@ -1,4 +1,4 @@
-package io.github.oybek.gdetram.dao.impl
+package io.github.oybek.gdetram.dao
 
 import cats.implicits._
 import doobie.ConnectionIO
@@ -43,6 +43,6 @@ object MessageRepoImpl extends MessageRepo[ConnectionIO] {
          |  limit $limit
          |""".stripMargin.query[(Platform, Long, String)]
 
-  def delSyncMessageFor(user: (Platform, Long), text: String): Update0 =
+  def delSyncMessageFor(user: UserId, text: String): Update0 =
     sql"delete from sync_message where platform = ${user._1} and id = ${user._2} and text = $text".update
 }

@@ -17,6 +17,8 @@ object Dependencies {
     val mock = "4.4.0"
     val mockTest = "3.1.0"
     val flyway = "7.5.4"
+    val randomDataGenerator = "2.9"
+    val quickLens = "1.7.1"
   }
 
   val catsCore = "org.typelevel" %% "cats-core" % V.catsCore
@@ -25,6 +27,8 @@ object Dependencies {
   val pureConfig = "com.github.pureconfig" %% "pureconfig" % V.pureConfig
   val flyway = "org.flywaydb" % "flyway-core" % V.flyway
   val jsoup = "org.jsoup" % "jsoup" % V.jsoup
+  val randomDataGenerator = "com.danielasfregola" %% "random-data-generator" % V.randomDataGenerator % Test
+  val quickLens = "com.softwaremill.quicklens" % "quicklens_2.13" % V.quickLens
 
   val doobie = Seq(
     "org.tpolecat" %% "doobie-core" % V.doobie,
@@ -63,7 +67,7 @@ object Dependencies {
     "com.dimafeng" %% "testcontainers-scala-postgresql" % "0.39.0" % "test"
   )
 
-  val common = Seq(catsCore, catsEffect, scalaTest, pureConfig, jsoup, flyway) ++
+  val common = Seq(catsCore, catsEffect, scalaTest, pureConfig, jsoup, flyway, randomDataGenerator, quickLens) ++
     telegramium ++
     circe ++
     http4s ++
