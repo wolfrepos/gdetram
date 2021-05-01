@@ -1,0 +1,27 @@
+name: release
+on:
+  push:
+    branches:
+      - release
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASS }}
+        script: |
+          cp /tmp/${{ github.sha }}.jar ~/gdetram/app.jar
+          sudo systemctl restart gdetram
+
+    - name: Inform the command
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.GDETRAM_CHAT_ID }}
+        token: ${{ secrets.TG_BOT_API_TOKEN }}
+        message: |
+          New release is deployed 🚀
+          Commit SHA = ${{ github.sha }}

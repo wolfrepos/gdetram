@@ -4,54 +4,43 @@ on:
     branches:
       - master
 jobs:
-  job:
+  build:
     runs-on: ubuntu-latest
     steps:
-    - name: gdetram clone
+    - name: Gdetram clone
       uses: actions/checkout@v2
-    - name: plato clone
+
+    - name: Plato clone
       uses: actions/checkout@v2
       with:
         repository: oybek/plato
         token: ${{ secrets.ACCESS_TOKEN }}
         path: 'plato/'
+
     - name: Set up JDK 11
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: test/coverage
+
+    - name: Test and form the coverage report
       run: |
         sbt clean coverage test
         sbt coverageReport
-    - name: sonar
+
+    - name: Sonar scan
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: sbt -Dsonar.login=$SONAR_TOKEN sonarScan
-    - name: assembly
+
+    - name: Assembly
       run: sbt "clean; set test in assembly := {}; assembly"
-    - name: Deploy
+
+    - name: Upload to the server
       uses: garygrossgarten/github-action-scp@release
       with:
         local: target/scala-2.13/gdetram-assembly-0.1.jar
-        remote: /tmp/app.jar
+        remote: /tmp/${{ github.sha }}.jar
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         password: ${{ secrets.SSH_PASS }}
-    - name: Update app
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        password: ${{ secrets.SSH_PASS }}
-        script: |
-          cp /tmp/app.jar ~/gdetram/app.jar
-          sudo systemctl restart gdetram
-    - name: Inform command
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.GDETRAM_CHAT_ID }}
-        token: ${{ secrets.TG_BOT_API_TOKEN }}
-        message: |
-          New release is deployed 🚀
-          Commit SHA = ${{ github.sha }}
