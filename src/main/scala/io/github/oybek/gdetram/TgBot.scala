@@ -56,9 +56,6 @@ class TgBot[F[_]: Async: Timer: Concurrent, G[_]: Monad](adminIds: List[String])
           .handle(Tg -> message.chat.id, Geo(location.latitude, location.longitude))
           .flatMap(reply => send(message.chat.id, reply._1, Some(reply._2.toTg)))
 
-      case TextMessage("/stat" | "/stat@gdetrambot") =>
-        dailyReports("Тебе хуемразь отдельно повторить?!".some)
-
       case TextMessage(text) =>
         core
           .handle(Tg -> message.chat.id, Text(text))
