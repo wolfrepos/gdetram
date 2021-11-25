@@ -1,8 +1,8 @@
-package io.github.oybek.gdetram.dao
+package io.github.oybek.gdetram.dao.impl
 
 import cats.Applicative.ops.toAllApplicativeOps
-import doobie.implicits._
 import doobie.ConnectionIO
+import doobie.implicits._
 import doobie.util.query.Query0
 import doobie.util.update.Update0
 import io.github.oybek.gdetram.dao.UserRepo

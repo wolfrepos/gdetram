@@ -6,9 +6,10 @@ import cats.implicits.catsKernelStdOrderForDouble
 import doobie.implicits._
 import doobie.scalatest.IOChecker
 import doobie.{ConnectionIO, Update}
+import io.github.oybek.gdetram.dao.impl.CityRepoImpl
 import io.github.oybek.gdetram.donors.TestDonors.{randomCities, randomGeoMessage}
 import io.github.oybek.gdetram.model.City
-import io.github.oybek.gdetram.service.model.Message.Geo
+import io.github.oybek.gdetram.model.Message.Geo
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 

@@ -5,8 +5,8 @@ import cats.implicits.{catsSyntaxApplicativeId, catsSyntaxEitherId}
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator.random
 import io.github.oybek.gdetram.donors.TestDonors.{randomGeoMessage, randomUserId}
 import io.github.oybek.gdetram.service.impl.StartService
-import io.github.oybek.gdetram.service.model.Button.GeoButton
-import io.github.oybek.gdetram.service.model.Message.Text
+import io.github.oybek.gdetram.model.Button.GeoButton
+import io.github.oybek.gdetram.model.Message.Text
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 

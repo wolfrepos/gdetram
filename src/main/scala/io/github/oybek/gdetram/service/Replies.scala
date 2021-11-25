@@ -1,7 +1,7 @@
 package io.github.oybek.gdetram.service
 
 import io.github.oybek.gdetram.model.Stop
-import io.github.oybek.gdetram.service.model.Button.{GeoButton, TextButton}
+import io.github.oybek.gdetram.model.Button.{GeoButton, TextButton}
 
 object Replies {
 

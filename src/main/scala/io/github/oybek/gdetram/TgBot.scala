@@ -7,7 +7,7 @@ import cats.instances.option._
 import cats.syntax.all._
 import io.github.oybek.gdetram.dao.JournalRepo
 import io.github.oybek.gdetram.model.Platform.Tg
-import io.github.oybek.gdetram.service.model.Message.{Geo, Text}
+import io.github.oybek.gdetram.model.Message.{Geo, Text}
 import io.github.oybek.gdetram.service.{Logic, MetricService}
 import io.github.oybek.gdetram.util.TgExtractors
 import org.slf4j.{Logger, LoggerFactory}

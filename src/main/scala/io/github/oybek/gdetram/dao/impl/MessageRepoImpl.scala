@@ -1,4 +1,4 @@
-package io.github.oybek.gdetram.dao
+package io.github.oybek.gdetram.dao.impl
 
 import cats.implicits._
 import doobie.ConnectionIO

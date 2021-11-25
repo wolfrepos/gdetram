@@ -20,7 +20,8 @@ import org.slf4j.LoggerFactory
 import telegramium.bots.high.{Api, BotApi}
 import doobie.implicits._
 import doobie.{ConnectionIO, ExecutionContexts}
-import io.github.oybek.gdetram.dao.{CityRepo, CityRepoImpl, JournalRepo, JournalRepoImpl, MessageRepo, MessageRepoImpl, StopRepo, StopRepoImpl, UserRepo, UserRepoImpl}
+import io.github.oybek.gdetram.dao.impl.{CityRepoImpl, JournalRepoImpl, MessageRepoImpl, StopRepoImpl, UserRepoImpl}
+import io.github.oybek.gdetram.dao.{CityRepo, JournalRepo, MessageRepo, StopRepo, UserRepo}
 import io.github.oybek.gdetram.service.impl.{CityService, LogicImpl, MetricServiceImpl, RegistrationService, StartService, StatusService, StopService, TabloidServiceImpl, UserServiceImpl}
 
 import scala.concurrent.duration.FiniteDuration

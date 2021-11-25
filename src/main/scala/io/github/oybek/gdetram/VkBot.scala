@@ -8,7 +8,7 @@ import cats.syntax.all._
 import io.github.oybek.gdetram.dao.JournalRepo
 import io.github.oybek.gdetram.model.Platform.Vk
 import io.github.oybek.gdetram.service.Logic
-import io.github.oybek.gdetram.service.model.Message.{Geo, Text}
+import io.github.oybek.gdetram.model.Message.{Geo, Text}
 import io.github.oybek.gdetram.util.Formatting._
 import io.github.oybek.vk4s.api._
 import io.github.oybek.vk4s.domain.{AudioMessage, LongPollBot, MessageNew, WallPostNew, WallReplyNew}
