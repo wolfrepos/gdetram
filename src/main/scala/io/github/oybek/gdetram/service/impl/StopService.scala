@@ -4,13 +4,12 @@ import cats.effect._
 import cats.implicits._
 import cats.{Monad, ~>}
 import io.github.oybek.gdetram.dao.{CityRepo, JournalRepo, StopRepo, UserRepo}
-import io.github.oybek.gdetram.model.{Message, _}
-import io.github.oybek.gdetram.service.Replies.{cantFindStop, nearestStops, noCityBase}
-import io.github.oybek.gdetram.service._
 import io.github.oybek.gdetram.model.Button.TextButton
 import io.github.oybek.gdetram.model.Message.{Geo, Text}
+import io.github.oybek.gdetram.model._
+import io.github.oybek.gdetram.service.Replies.{cantFindStop, nearestStops, noCityBase}
+import io.github.oybek.gdetram.service._
 import io.github.oybek.gdetram.util.Formatting
-import io.github.oybek.plato.model.Arrival
 
 import java.sql.Timestamp
 
@@ -20,10 +19,10 @@ class StopService[F[_] : Monad: Timer, G[_]: Monad](implicit
                                                     userRepo: UserRepo[G],
                                                     journalRepo: JournalRepo[G],
                                                     tabloidService: TabloidService[F],
-                                                    transaction: G ~> F) extends AuthorizedHandler[F, Reply] {
+                                                    transaction: G ~> F) extends Handler[F, (User, Message), Reply] {
 
-  override def handle(user: User, message: Message): F[Either[Reply, Reply]] = message match {
-    case geo: Geo =>
+  override val handle: ((User, Message)) => F[Either[Reply, Reply]] = {
+    case (user, geo: Geo) =>
       transaction {
         for {
           city <- cityRepo.get(user.cityId)
@@ -31,7 +30,7 @@ class StopService[F[_] : Monad: Timer, G[_]: Monad](implicit
         } yield nearestStops(stops, city.name).asLeft[Reply]
       }
 
-    case Text(text) =>
+    case (user, Text(text)) =>
       transaction {
         stopRepo.findByName(text, user.cityId)
       } flatMap {
