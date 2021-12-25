@@ -6,7 +6,7 @@ import io.github.oybek.gdetram.dao.{CityRepo, UserRepo}
 import io.github.oybek.gdetram.donors.TestDonors.{randomCity, randomGeoMessage, randomMessage, randomTextMessage, randomUser, randomUserId}
 import io.github.oybek.gdetram.model.User
 import io.github.oybek.gdetram.service.impl.RegistrationService
-import io.github.oybek.gdetram.service.model.Button.GeoButton
+import io.github.oybek.gdetram.model.Button.GeoButton
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

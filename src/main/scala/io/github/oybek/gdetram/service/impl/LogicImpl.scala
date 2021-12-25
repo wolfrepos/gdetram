@@ -3,7 +3,7 @@ package io.github.oybek.gdetram.service.impl
 import cats.Monad
 import cats.data.EitherT
 import cats.effect.{Concurrent, Sync, Timer}
-import io.github.oybek.gdetram.service.model.Message
+import io.github.oybek.gdetram.model.Message
 import io.github.oybek.gdetram.service.{Logic, Reply, UserId}
 
 class LogicImpl[F[_]: Sync: Concurrent: Timer, G[_]: Monad](implicit

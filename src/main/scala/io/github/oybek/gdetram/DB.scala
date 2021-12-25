@@ -2,7 +2,7 @@ package io.github.oybek.gdetram
 
 import cats.effect.{Async, Blocker, ContextShift, Resource, Sync}
 import doobie.hikari.HikariTransactor
-import io.github.oybek.gdetram.config.DatabaseConfig
+import io.github.oybek.gdetram.config.Config.DatabaseConfig
 import org.flywaydb.core.Flyway
 
 import scala.concurrent.ExecutionContext

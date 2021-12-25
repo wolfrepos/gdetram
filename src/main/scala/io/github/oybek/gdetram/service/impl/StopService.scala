@@ -4,12 +4,11 @@ import cats.effect._
 import cats.implicits._
 import cats.{Monad, ~>}
 import io.github.oybek.gdetram.dao.{CityRepo, JournalRepo, StopRepo, UserRepo}
-import io.github.oybek.gdetram.model._
+import io.github.oybek.gdetram.model.{Message, _}
 import io.github.oybek.gdetram.service.Replies.{cantFindStop, nearestStops, noCityBase}
 import io.github.oybek.gdetram.service._
-import io.github.oybek.gdetram.service.model.Button.TextButton
-import io.github.oybek.gdetram.service.model.Message
-import io.github.oybek.gdetram.service.model.Message.{Geo, Text}
+import io.github.oybek.gdetram.model.Button.TextButton
+import io.github.oybek.gdetram.model.Message.{Geo, Text}
 import io.github.oybek.gdetram.util.Formatting
 import io.github.oybek.plato.model.Arrival
 

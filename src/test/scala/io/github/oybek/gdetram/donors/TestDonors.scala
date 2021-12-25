@@ -2,10 +2,9 @@ package io.github.oybek.gdetram.donors
 
 import cats.data.NonEmptyList
 import com.danielasfregola.randomdatagenerator.RandomDataGenerator._
-import io.github.oybek.gdetram.model.{City, Record, Stop, User}
+import io.github.oybek.gdetram.model.{City, Message, Record, Stop, User}
 import io.github.oybek.gdetram.service.UserId
-import io.github.oybek.gdetram.service.model.Message
-import io.github.oybek.gdetram.service.model.Message.{Geo, Text}
+import io.github.oybek.gdetram.model.Message.{Geo, Text}
 import org.scalacheck.Gen.chooseNum
 import org.scalacheck.{Arbitrary, Gen}
 

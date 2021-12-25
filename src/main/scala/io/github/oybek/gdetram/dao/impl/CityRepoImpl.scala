@@ -1,11 +1,11 @@
-package io.github.oybek.gdetram.dao
+package io.github.oybek.gdetram.dao.impl
 
 import doobie.ConnectionIO
 import doobie.implicits._
 import doobie.util.query.Query0
 import io.github.oybek.gdetram.dao.CityRepo
 import io.github.oybek.gdetram.model.City
-import io.github.oybek.gdetram.service.model.Message.Geo
+import io.github.oybek.gdetram.model.Message.Geo
 
 object CityRepoImpl extends CityRepo[ConnectionIO] {
   def findByName(name: String): ConnectionIO[(City, Int)] =

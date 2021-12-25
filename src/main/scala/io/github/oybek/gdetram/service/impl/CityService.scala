@@ -5,9 +5,8 @@ import cats.implicits._
 import cats.{Monad, ~>}
 import io.github.oybek.gdetram.dao.{CityRepo, UserRepo}
 import io.github.oybek.gdetram.service.Replies._
-import io.github.oybek.gdetram.model._
-import io.github.oybek.gdetram.service.model.Message
-import io.github.oybek.gdetram.service.model.Message.{Geo, Text}
+import io.github.oybek.gdetram.model.{Message, _}
+import io.github.oybek.gdetram.model.Message.{Geo, Text}
 import io.github.oybek.gdetram.service.{AuthorizedHandler, Reply}
 
 class CityService[F[_]: Sync, G[_]: Monad](implicit

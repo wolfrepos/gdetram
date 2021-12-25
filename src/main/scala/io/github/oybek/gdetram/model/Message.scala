@@ -1,4 +1,4 @@
-package io.github.oybek.gdetram.service.model
+package io.github.oybek.gdetram.model
 
 sealed trait Message
 

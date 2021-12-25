@@ -1,6 +1,7 @@
 package io.github.oybek.gdetram.dao
 
 import doobie.scalatest.IOChecker
+import io.github.oybek.gdetram.dao.impl.MessageRepoImpl
 import io.github.oybek.gdetram.model.Platform.Tg
 import io.github.oybek.gdetram.donors.TestDonors.randomUserId
 import org.scalatest.funsuite.AnyFunSuite

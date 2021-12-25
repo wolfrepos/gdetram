@@ -1,11 +1,11 @@
-package io.github.oybek.gdetram.dao
+package io.github.oybek.gdetram.dao.impl
 
-import doobie.implicits._
 import doobie.ConnectionIO
+import doobie.implicits._
 import doobie.util.query.Query0
 import io.github.oybek.gdetram.dao.StopRepo
 import io.github.oybek.gdetram.model.Stop
-import io.github.oybek.gdetram.service.model.Message.Geo
+import io.github.oybek.gdetram.model.Message.Geo
 
 object StopRepoImpl extends StopRepo[ConnectionIO] {
 
