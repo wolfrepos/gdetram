@@ -7,14 +7,13 @@ import io.github.oybek.gdetram.service.Replies.cityAsk
 import io.github.oybek.gdetram.model.Message.Text
 import io.github.oybek.gdetram.service.{Handler, Reply, UserId}
 
-class StartService[F[_]: Applicative] extends Handler[F, Unit] {
+class StartService[F[_]: Applicative] extends Handler[F, Message, Unit] {
 
-  def handle(userId: UserId, message: Message): F[Either[Reply, Unit]] =
-    message match {
-      case Text("начать" | "/start") =>
-        cityAsk(withGreeting = true).asLeft[Unit].pure[F]
+  override val handle: Message => F[Either[Reply, Unit]] = {
+    case Text("начать" | "/start") =>
+      cityAsk(withGreeting = true).asLeft[Unit].pure[F]
 
-      case _ =>
-        ().asRight[Reply].pure[F]
-    }
+    case _ =>
+      ().asRight[Reply].pure[F]
+  }
 }

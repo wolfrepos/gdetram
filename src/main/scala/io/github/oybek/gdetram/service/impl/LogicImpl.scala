@@ -16,11 +16,11 @@ class LogicImpl[F[_]: Sync: Concurrent: Timer, G[_]: Monad](implicit
 
   def handle(userId: UserId, message: Message): F[Reply] = (
     for {
-      _                   <- EitherT(startService.handle(userId, message))
+      _                   <- EitherT(startService.handle(message))
       user                <- EitherT(registrationService.handle(userId, message))
       _                   <- EitherT(cityService.handle(user, message))
       (tabloid, keyboard) <- EitherT(stopService.handle(user, message))
-      status              <- EitherT(statusService.handle(user, message))
+      status              <- EitherT(statusService.handle(user))
     } yield (
       tabloid + "\n" +
         status,
