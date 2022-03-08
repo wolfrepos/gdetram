@@ -1,6 +1,6 @@
 package io.github.oybek.gdetram.service.impl
 
-import cats.Applicative.ops.toAllApplicativeOps
+import cats.implicits.toFunctorOps
 import cats.implicits.catsSyntaxFlatMapOps
 import doobie.ConnectionIO
 import doobie.implicits.toSqlInterpolator

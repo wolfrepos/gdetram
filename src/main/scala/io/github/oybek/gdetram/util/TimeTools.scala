@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 import cats.syntax.all._
-import cats.effect.{Sync, Timer}
+import cats.effect.Sync
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.duration._

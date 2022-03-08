@@ -1,26 +1,26 @@
 package io.github.oybek.gdetram
 
-import cats.Monad
+import cats.{Monad, Parallel}
 import cats.effect.syntax.all._
-import cats.effect.{Async, Concurrent, Sync, Timer}
+import cats.effect.{Async, Concurrent, Sync}
 import cats.instances.option._
 import cats.syntax.all._
 import io.github.oybek.gdetram.dao.JournalRepo
 import io.github.oybek.gdetram.model.Platform.Tg
 import io.github.oybek.gdetram.model.Message.{Geo, Text}
 import io.github.oybek.gdetram.service.{Logic, MetricService}
-import io.github.oybek.gdetram.util.TgExtractors
+import io.github.oybek.gdetram.util.{TgExtractors, Timer}
 import org.slf4j.{Logger, LoggerFactory}
 import telegramium.bots.high._
 import telegramium.bots.high.implicits._
 
 import scala.concurrent.duration.DurationInt
 
-class TgBot[F[_]: Async: Timer: Concurrent, G[_]: Monad](adminIds: List[String])
-                                                        (implicit bot: Api[F],
-                                                         core: Logic[F],
-                                                         journalRepo: JournalRepo[G],
-                                                         metricService: MetricService[F, G])
+class TgBot[F[_]: Async: Timer: Parallel, G[_]: Monad](adminIds: List[String])
+                                                      (implicit bot: Api[F],
+                                                                core: Logic[F],
+                                                                journalRepo: JournalRepo[G],
+                                                                metricService: MetricService[F, G])
     extends LongPollBot[F](bot)
     with TgExtractors {
 

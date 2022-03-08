@@ -1,6 +1,6 @@
 package io.github.oybek.gdetram.dao.impl
 
-import cats.Applicative.ops.toAllApplicativeOps
+import cats.implicits.toFunctorOps
 import doobie.ConnectionIO
 import doobie.implicits._
 import doobie.util.query.Query0
