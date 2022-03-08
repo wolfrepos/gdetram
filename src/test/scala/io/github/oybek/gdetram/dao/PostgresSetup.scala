@@ -1,17 +1,16 @@
 package io.github.oybek.gdetram.dao
 
-import cats.effect.{ContextShift, IO}
+import cats.effect.IO
 import com.dimafeng.testcontainers.{ForAllTestContainer, PostgreSQLContainer}
-import doobie.util.ExecutionContexts
 import doobie.util.transactor.Transactor
 import org.flywaydb.core.Flyway
 import org.scalatest.funsuite.AnyFunSuite
+import org.testcontainers.utility.DockerImageName
 
 trait PostgresSetup extends ForAllTestContainer {
   this: AnyFunSuite =>
 
-  override val container: PostgreSQLContainer = PostgreSQLContainer()
-  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContexts.synchronous)
+  override val container: PostgreSQLContainer = PostgreSQLContainer(DockerImageName.parse("postgres:10.10"))
 
   lazy val transactor: Transactor.Aux[IO, Unit] =
     Transactor

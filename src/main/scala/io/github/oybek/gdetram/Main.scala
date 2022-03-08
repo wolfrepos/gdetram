@@ -1,6 +1,6 @@
 package io.github.oybek.gdetram
 
-import cats.effect.{Blocker, ExitCode, IO, IOApp, Resource, Sync, Timer}
+import cats.effect.{ExitCode, IO, IOApp, Resource, Sync}
 import cats.instances.list._
 import cats.instances.option._
 import cats.syntax.all._
@@ -15,10 +15,11 @@ import io.github.oybek.gdetram.model.Platform.{Tg, Vk}
 import io.github.oybek.gdetram.service._
 import io.github.oybek.gdetram.service.impl._
 import io.github.oybek.gdetram.util.TimeTools._
-import io.github.oybek.vk4s.api.{GetConversationsReq, GetLongPollServerReq, Unanswered, VkApi, VkApiHttp4s}
-import io.github.oybek.vk4s.domain.{Conversation, Peer}
+import io.github.oybek.gdetram.util.Timer
+import io.github.oybek.vkontaktum.api.{GetConversationsReq, GetLongPollServerReq, Unanswered, VkApi, VkApiHttp4s}
+import io.github.oybek.vkontaktum.domain.{Conversation, Peer}
 import org.http4s.client.Client
-import org.http4s.client.blaze.BlazeClientBuilder
+import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.middleware.Logger
 import org.slf4j.LoggerFactory
 import telegramium.bots.high.{Api, BotApi}
@@ -31,6 +32,7 @@ object Main extends IOApp {
   type G[T] = ConnectionIO[T]
 
   private val log = LoggerFactory.getLogger("Main")
+  implicit val timer: Timer[IO] = (finiteDuration: FiniteDuration) => IO.sleep(finiteDuration)
 
   override def run(args: List[String]): F[ExitCode] =
     Config.load match {
@@ -38,12 +40,12 @@ object Main extends IOApp {
         log.info(s"loaded config: $config")
         for {
           _ <- resources(config).use {
-            case (transactor, httpClient, blocker) =>
+            case (transactor, httpClient) =>
               assembleAndLaunch(
                 config,
                 transactor,
-                httpClient,
-                blocker)
+                httpClient
+              )
           }
         } yield ExitCode.Success
 
@@ -53,8 +55,7 @@ object Main extends IOApp {
 
   def assembleAndLaunch(config: Config,
                         transactor: HikariTransactor[F],
-                        httpClient: Client[F],
-                        blocker: Blocker): F[ExitCode] = {
+                        httpClient: Client[F]): F[ExitCode] = {
     implicit val transaction: ~>[G, F] = new ~>[G, F] {
       override def apply[A](cio: G[A]): F[A] =
         cio.transact(transactor)
@@ -80,7 +81,7 @@ object Main extends IOApp {
     implicit val metricService : MetricService[F, G] = new MetricServiceImpl[F, G]
 
     implicit val vkBotApi : VkApi[F] = new VkApiHttp4s[F](client)
-    implicit val tgBotApi : Api[F]   = new BotApi[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}", blocker)
+    implicit val tgBotApi : Api[F]   = BotApi[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}")
 
     implicit val vkBot: VkBot[F] = new VkBot[F](config.getLongPollServerReq)
     implicit val tgBot: TgBot[F, G] = new TgBot[F, G](config.adminTgIds.split(",").map(_.trim).toList)
@@ -149,16 +150,15 @@ object Main extends IOApp {
       }
     } yield ()
 
-  private def resources(config: Config): Resource[F, (HikariTransactor[F], Client[F], Blocker)] = {
+  private def resources(config: Config): Resource[F, (HikariTransactor[F], Client[F])] = {
     for {
       httpCp <- ExecutionContexts.cachedThreadPool[F]
-      connEc <- ExecutionContexts.fixedThreadPool[F](10)
       tranEc <- ExecutionContexts.cachedThreadPool[F]
-      transactor <- DB.transactor[F](config.database, connEc, Blocker.liftExecutionContext(tranEc))
-      httpClient <- BlazeClientBuilder[F](httpCp)
+      transactor <- DB.transactor[F](config.database, tranEc)
+      httpClient <- BlazeClientBuilder[F]
+        .withExecutionContext(httpCp)
         .withResponseHeaderTimeout(FiniteDuration(60, TimeUnit.SECONDS))
         .resource
-      blocker <- Blocker[F]
-    } yield (transactor, httpClient, blocker)
+    } yield (transactor, httpClient)
   }
 }

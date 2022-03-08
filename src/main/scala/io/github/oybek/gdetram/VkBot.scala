@@ -1,26 +1,27 @@
 package io.github.oybek.gdetram
 
 import cats.data.NonEmptyList
-import cats.effect.concurrent.Ref
 import cats.effect.syntax.all._
-import cats.effect.{Async, Clock, Concurrent, Sync, Timer}
+import cats.effect.{Async, Clock, Concurrent, Sync}
 import cats.syntax.all._
 import io.github.oybek.gdetram.dao.JournalRepo
 import io.github.oybek.gdetram.model.Platform.Vk
 import io.github.oybek.gdetram.service.Logic
 import io.github.oybek.gdetram.model.Message.{Geo, Text}
 import io.github.oybek.gdetram.util.Formatting._
-import io.github.oybek.vk4s.api._
-import io.github.oybek.vk4s.domain.{AudioMessage, LongPollBot, MessageNew, WallPostNew, WallReplyNew}
-import io.github.oybek.vk4s.api.{GetLongPollServerReq, Keyboard, SendMessageReq}
+import io.github.oybek.gdetram.util.Timer
+import io.github.oybek.vkontaktum.api._
+import io.github.oybek.vkontaktum.domain.{AudioMessage, LongPollBot, MessageNew, WallPostNew, WallReplyNew}
+import io.github.oybek.vkontaktum.api.{GetLongPollServerReq, Keyboard, SendMessageReq}
 import org.http4s.client.Client
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.concurrent.duration._
 
-class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollServerReq)(implicit httpClient: Client[F],
-                                                                                        core: Logic[F],
-                                                                                        vkApi: VkApi[F])
+class VkBot[F[_]: Async: Timer: Concurrent: Clock](getLongPollServerReq: GetLongPollServerReq)
+                                                  (implicit httpClient: Client[F],
+                                                            core: Logic[F],
+                                                            vkApi: VkApi[F])
     extends LongPollBot[F](httpClient, vkApi, getLongPollServerReq) {
 
   implicit val log: Logger = LoggerFactory.getLogger("VkGate")
@@ -86,7 +87,7 @@ class VkBot[F[_]: Async: Timer: Concurrent](getLongPollServerReq: GetLongPollSer
       keyboard = keyboard
     )
     for {
-      time <- Clock[F].realTime(MILLISECONDS)
+      time <- Clock[F].realTime.map(_.toMillis)
       resp <- vkApi.sendMessage(sendMessageReq.copy(randomId = time))
       _ <- Sync[F].delay { log.info(s"send message: $sendMessageReq, got resp $resp") }
     } yield ()

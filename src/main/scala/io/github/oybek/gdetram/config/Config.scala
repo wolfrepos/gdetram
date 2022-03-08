@@ -1,7 +1,7 @@
 package io.github.oybek.gdetram.config
 
 import io.github.oybek.gdetram.config.Config.DatabaseConfig
-import io.github.oybek.vk4s.api.GetLongPollServerReq
+import io.github.oybek.vkontaktum.api.GetLongPollServerReq
 import pureconfig.ConfigReader.Result
 import pureconfig._
 import pureconfig.generic.auto._

@@ -1,9 +1,9 @@
 package io.github.oybek.gdetram.dao.impl
 
-import cats.Applicative.ops.toAllApplicativeOps
+import cats.implicits.toFunctorOps
+import doobie.ConnectionIO
 import doobie.implicits._
 import doobie.implicits.javasql._
-import doobie.ConnectionIO
 import doobie.util.update.Update0
 import io.github.oybek.gdetram.dao.JournalRepo
 import io.github.oybek.gdetram.model.Record

@@ -3,20 +3,20 @@ import sbt._
 object Dependencies {
 
   object V {
-    val catsCore = "2.1.1"
-    val catsEffect = "2.1.4"
+    val catsCore = "2.7.0"
+    val catsEffect = "3.3.5"
     val circe = "0.13.0"
     val scalaTest = "3.2.0"
-    val http4s = "0.21.7"
+    val http4s = "0.23.10"
     val slf4j = "1.7.26"
     val logback = "1.2.3"
     val pureConfig = "0.13.0"
-    val doobie = "0.8.8"
+    val doobie = "1.0.0-RC1"
     val jsoup = "1.7.2"
-    val telegramium = "2.49.0"
+    val telegramium = "7.57.0"
     val mock = "5.1.0"
     val mockTest = "3.1.0"
-    val flyway = "7.5.4"
+    val flyway = "8.4.0"
     val randomDataGenerator = "2.9"
     val quickLens = "1.7.1"
   }
@@ -34,7 +34,6 @@ object Dependencies {
     "org.tpolecat" %% "doobie-core" % V.doobie,
     "org.tpolecat" %% "doobie-postgres" % V.doobie,
     "org.tpolecat" %% "doobie-hikari" % V.doobie,
-    "org.tpolecat" %% "doobie-h2" % V.doobie,
     "org.tpolecat" %% "doobie-scalatest" % V.doobie % Test
   )
 

@@ -9,17 +9,17 @@ import io.github.oybek.gdetram.model.Message.{Geo, Text}
 import io.github.oybek.gdetram.model._
 import io.github.oybek.gdetram.service.Replies.{cantFindStop, nearestStops, noCityBase}
 import io.github.oybek.gdetram.service._
-import io.github.oybek.gdetram.util.Formatting
+import io.github.oybek.gdetram.util.{Formatting, Timer}
 
 import java.sql.Timestamp
 
-class StopService[F[_] : Monad: Timer, G[_]: Monad](implicit
-                                                    cityRepo: CityRepo[G],
-                                                    stopRepo: StopRepo[G],
-                                                    userRepo: UserRepo[G],
-                                                    journalRepo: JournalRepo[G],
-                                                    tabloidService: TabloidService[F],
-                                                    transaction: G ~> F) extends Handler[F, (User, Message), Reply] {
+class StopService[F[_] : Monad: Timer: Clock, G[_]: Monad](implicit
+                                                           cityRepo: CityRepo[G],
+                                                           stopRepo: StopRepo[G],
+                                                           userRepo: UserRepo[G],
+                                                           journalRepo: JournalRepo[G],
+                                                           tabloidService: TabloidService[F],
+                                                           transaction: G ~> F) extends Handler[F, (User, Message), Reply] {
 
   override val handle: ((User, Message)) => F[Either[Reply, Reply]] = {
     case (user, geo: Geo) =>
@@ -47,7 +47,7 @@ class StopService[F[_] : Monad: Timer, G[_]: Monad](implicit
                            stop: Stop) =
     for {
       tabloidText <- getTabloid(stop)
-      currMillis <- Timer[F].clock.realTime(scala.concurrent.duration.MILLISECONDS)
+      currMillis <- Clock[F].realTime.map(_.toMillis)
       _ <- transaction(
         journalRepo.insert(
           Record(

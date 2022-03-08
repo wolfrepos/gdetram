@@ -1,8 +1,8 @@
 package io.github.oybek.gdetram.dao
 
-import cats.Applicative.ops.toAllApplicativeOps
+import cats.implicits.toFunctorOps
 import cats.data.NonEmptyList
-import cats.implicits.catsKernelStdOrderForDouble
+import cats.effect.unsafe.implicits.global
 import doobie.implicits._
 import doobie.scalatest.IOChecker
 import doobie.{ConnectionIO, Update}
