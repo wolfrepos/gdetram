@@ -91,9 +91,6 @@ object Main extends IOApp {
       f1 <- vkBot.start.start
       f2 <- tgBot.start.start
       _ <- tgBot.dailyReports("Ну что уебаны?! Готовы к метрикам?".some).everyDayAt(8, 0).start
-      _ <- spamTg(messageRepo).start.void
-      _ <- spamVk(messageRepo).start.void
-      _ <- vkRevoke(vkBotApi, vkBot, config.getLongPollServerReq).every(10.seconds, (9, 24)).start.void
       _ <- transaction(UserServiceImpl.refreshUserInfo).attempt.void.everyDayAt(0, 0).start
       _ <- f1.join
       _ <- f2.join
