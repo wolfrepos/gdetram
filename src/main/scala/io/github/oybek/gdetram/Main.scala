@@ -80,19 +80,14 @@ object Main extends IOApp {
     implicit val core : Logic[F] = new LogicImpl[F, G]
     implicit val metricService : MetricService[F, G] = new MetricServiceImpl[F, G]
 
-    implicit val vkBotApi : VkApi[F] = new VkApiHttp4s[F](client)
     implicit val tgBotApi : Api[F]   = BotApi[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}")
-
-    implicit val vkBot: VkBot[F] = new VkBot[F](config.getLongPollServerReq)
     implicit val tgBot: TgBot[F, G] = new TgBot[F, G](config.adminTgIds.split(",").map(_.trim).toList)
 
     for {
       _ <- DB.initialize(transactor)
-      f1 <- vkBot.start.start
       f2 <- tgBot.start.start
       _ <- tgBot.dailyReports("Ну что уебаны?! Готовы к метрикам?".some).everyDayAt(8, 0).start
       _ <- transaction(UserServiceImpl.refreshUserInfo).attempt.void.everyDayAt(0, 0).start
-      _ <- f1.join
       _ <- f2.join
     } yield ExitCode.Success
   }
@@ -109,43 +104,6 @@ object Main extends IOApp {
       })
     } yield ()
   ).every(10.seconds, (9, 20))
-
-  private def spamVk(messageRepo: MessageRepo[G])(implicit
-                                                  vkBot: VkBot[F],
-                                                  transaction: G ~> F): F[Unit] = (
-    for {
-      messages <- transaction(messageRepo.pollSyncMessage(Vk, 100))
-      _ <- Sync[F].delay(log.info(s"sync_message vk: $messages"))
-      _ <- messages.toNel.traverse(messages1 =>
-        vkBot.sendMessage(
-          Right(messages1.map(_._2).some),
-          messages1.head._3,
-        )
-      )
-    } yield ()
-  ).every(10.seconds, (9, 20))
-
-  private def vkRevoke(vkApi: VkApi[F],
-                       vkBot: VkBot[F],
-                       getLongPollServerReq: GetLongPollServerReq,
-                       offset: Int = 0,
-                       count: Int = 100): F[Unit] =
-    for {
-      getConversationsRes <- vkApi.getConversations(
-        GetConversationsReq(
-          filter = Unanswered,
-          offset = offset,
-          count = count,
-          version = getLongPollServerReq.version,
-          accessToken = getLongPollServerReq.accessToken
-        )
-      )
-      _ <- getConversationsRes.response.items.map(_.conversation).traverse {
-        case Conversation(Peer(peerId, _, _), _) =>
-          vkBot.sendMessage(Left(peerId), "Прошу прощения за заминки, сейчас я снова работаю") >>
-            Timer[F].sleep(2 seconds)
-      }
-    } yield ()
 
   private def resources(config: Config): Resource[F, (HikariTransactor[F], Client[F])] = {
     for {
