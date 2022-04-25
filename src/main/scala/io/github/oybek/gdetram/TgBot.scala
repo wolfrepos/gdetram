@@ -28,7 +28,7 @@ class TgBot[F[_]: Async: Timer: Parallel, G[_]: Monad](adminIds: List[String])
 
   import telegramium.bots._
 
-  def dailyReports(preMessage: Option[String] = None, chatId: Int = -391934727): F[Unit] =
+  def dailyReports(preMessage: Option[String] = None, chatId: Long = -391934727): F[Unit] =
     preMessage.traverse_(send(chatId, _) >> Timer[F].sleep(2.seconds)) >>
       metricService.userStats.flatMap(send(chatId, _))
 
@@ -55,6 +55,9 @@ class TgBot[F[_]: Async: Timer: Parallel, G[_]: Monad](adminIds: List[String])
         core
           .handle(Tg -> message.chat.id, Geo(location.latitude, location.longitude))
           .flatMap(reply => send(message.chat.id, reply._1, Some(reply._2.toTg)))
+
+      case TextMessage("/stats") =>
+        dailyReports(chatId = message.chat.id)
 
       case TextMessage(text) =>
         core
