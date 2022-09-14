@@ -85,10 +85,10 @@ object Main extends IOApp {
 
     for {
       _ <- DB.initialize(transactor)
-      f2 <- tgBot.start.start
+      _ <- tgBot.start.start
       _ <- tgBot.dailyReports("Ну что уебаны?! Готовы к метрикам?".some).everyDayAt(8, 0).start
       _ <- transaction(UserServiceImpl.refreshUserInfo).attempt.void.everyDayAt(0, 0).start
-      _ <- f2.join
+      _ <- spamTg(messageRepo)
     } yield ExitCode.Success
   }
 
@@ -103,7 +103,7 @@ object Main extends IOApp {
         case _ => ().pure[F]
       })
     } yield ()
-  ).every(10.seconds, (9, 20))
+  ).attempt.void.every(10.seconds, (0, 23))
 
   private def resources(config: Config): Resource[F, (HikariTransactor[F], Client[F])] = {
     for {
