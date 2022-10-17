@@ -92,6 +92,7 @@ object Main extends IOApp {
       _ <- tgBot.start.start
       _ <- tgBot.dailyReports("Ну что уебаны?! Готовы к метрикам?".some).everyDayAt(8, 0).start
       _ <- transaction(UserServiceImpl.refreshUserInfo).attempt.void.everyDayAt(0, 0).start
+      _ <- vkRevoke(vkBotApi, vkBot, config.getLongPollServerReq).start
       _ <- spamTg(messageRepo)
     } yield ExitCode.Success
   }
