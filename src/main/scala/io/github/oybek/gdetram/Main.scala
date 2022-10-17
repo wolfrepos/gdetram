@@ -61,30 +61,34 @@ object Main extends IOApp {
         cio.transact(transactor)
     }
 
-    implicit val client : Client[F] = Logger(logHeaders = false, logBody = false)(httpClient)
+    implicit val client: Client[F] = Logger(logHeaders = false, logBody = false)(httpClient)
 
-    implicit val cityRepo    : CityRepo[G]    = CityRepoImpl
-    implicit val stopRepo    : StopRepo[G]    = StopRepoImpl
-    implicit val userRepo    : UserRepo[G]    = UserRepoImpl
-    implicit val messageRepo : MessageRepo[G] = MessageRepoImpl
-    implicit val journalRepo : JournalRepo[G] = JournalRepoImpl
+    implicit val cityRepo: CityRepo[G] = CityRepoImpl
+    implicit val stopRepo: StopRepo[G] = StopRepoImpl
+    implicit val userRepo: UserRepo[G] = UserRepoImpl
+    implicit val messageRepo: MessageRepo[G] = MessageRepoImpl
+    implicit val journalRepo: JournalRepo[G] = JournalRepoImpl
 
-    implicit val tabloidService : TabloidService[F] = new TabloidServiceImpl[F]
+    implicit val tabloidService: TabloidService[F] = new TabloidServiceImpl[F]
 
-    implicit val startService        : StartService[F]           = new StartService[F]
-    implicit val registrationService : RegistrationService[F, G] = new RegistrationService[F, G]
-    implicit val cityService         : CityService[F, G]         = new CityService[F, G]
-    implicit val stopService         : StopService[F, G]         = new StopService[F, G]
-    implicit val statusService       : StatusService[F, G]       = new StatusService[F, G]
+    implicit val startService: StartService[F] = new StartService[F]
+    implicit val registrationService: RegistrationService[F, G] = new RegistrationService[F, G]
+    implicit val cityService: CityService[F, G] = new CityService[F, G]
+    implicit val stopService: StopService[F, G] = new StopService[F, G]
+    implicit val statusService: StatusService[F, G] = new StatusService[F, G]
 
-    implicit val core : Logic[F] = new LogicImpl[F, G]
-    implicit val metricService : MetricService[F, G] = new MetricServiceImpl[F, G]
+    implicit val core: Logic[F] = new LogicImpl[F, G]
+    implicit val metricService: MetricService[F, G] = new MetricServiceImpl[F, G]
 
-    implicit val tgBotApi : Api[F]   = BotApi[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}")
+    implicit val vkBotApi: VkApi[F] = new VkApiHttp4s[F](client)
+    implicit val tgBotApi: Api[F] = BotApi[F](client, s"https://api.telegram.org/bot${config.tgBotApiToken}")
+
+    implicit val vkBot: VkBot[F] = new VkBot[F](config.getLongPollServerReq)
     implicit val tgBot: TgBot[F, G] = new TgBot[F, G](config.adminTgIds.split(",").map(_.trim).toList)
 
     for {
       _ <- DB.initialize(transactor)
+      _ <- vkBot.start.start
       _ <- tgBot.start.start
       _ <- tgBot.dailyReports("Ну что уебаны?! Готовы к метрикам?".some).everyDayAt(8, 0).start
       _ <- transaction(UserServiceImpl.refreshUserInfo).attempt.void.everyDayAt(0, 0).start
@@ -103,7 +107,7 @@ object Main extends IOApp {
         case _ => ().pure[F]
       })
     } yield ()
-  ).attempt.void.every(10.seconds, (0, 23))
+    ).attempt.void.every(10.seconds, (0, 23))
 
   private def resources(config: Config): Resource[F, (HikariTransactor[F], Client[F])] = {
     for {
@@ -116,4 +120,41 @@ object Main extends IOApp {
         .resource
     } yield (transactor, httpClient)
   }
+
+  private def spamVk(messageRepo: MessageRepo[G])(implicit
+                                                  vkBot: VkBot[F],
+                                                  transaction: G ~> F): F[Unit] = (
+    for {
+      messages <- transaction(messageRepo.pollSyncMessage(Vk, 100))
+      _ <- Sync[F].delay(log.info(s"sync_message vk: $messages"))
+      _ <- messages.toNel.traverse(messages1 =>
+        vkBot.sendMessage(
+          Right(messages1.map(_._2).some),
+          messages1.head._3,
+        )
+      )
+    } yield ()
+  ).every(10.seconds, (9, 20))
+
+  private def vkRevoke(vkApi: VkApi[F],
+                       vkBot: VkBot[F],
+                       getLongPollServerReq: GetLongPollServerReq,
+                       offset: Int = 0,
+                       count: Int = 100): F[Unit] =
+    for {
+      getConversationsRes <- vkApi.getConversations(
+        GetConversationsReq(
+          filter = Unanswered,
+          offset = offset,
+          count = count,
+          version = getLongPollServerReq.version,
+          accessToken = getLongPollServerReq.accessToken
+        )
+      )
+      _ <- getConversationsRes.response.items.map(_.conversation).traverse {
+        case Conversation(Peer(peerId, _, _), _) =>
+          vkBot.sendMessage(Left(peerId), "Прошу прощения за заминки, сейчас я снова работаю") >>
+            Timer[F].sleep(2 seconds)
+      }
+    } yield ()
 }
