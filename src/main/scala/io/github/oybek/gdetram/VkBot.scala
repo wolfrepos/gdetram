@@ -78,6 +78,7 @@ class VkBot[F[_]: Async: Timer: Concurrent: Clock](getLongPollServerReq: GetLong
                   keyboard: Option[Keyboard] = None): F[Unit] = {
     val sendMessageReq = SendMessageReq(
       peerId = to.fold(_.some, _ => None),
+      peerIds = to.fold(_ => None, identity),
       message = text,
       userIds = to.fold(_ => None, identity),
       version = getLongPollServerReq.version,

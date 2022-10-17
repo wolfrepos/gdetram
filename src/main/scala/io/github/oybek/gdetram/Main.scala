@@ -1,5 +1,6 @@
 package io.github.oybek.gdetram
 
+import cats.data.NonEmptyList
 import cats.effect.{ExitCode, IO, IOApp, Resource, Sync}
 import cats.instances.list._
 import cats.instances.option._
@@ -135,7 +136,7 @@ object Main extends IOApp {
         )
       )
     } yield ()
-  ).every(10.seconds, (9, 20))
+    ).every(10.seconds, (9, 20))
 
   private def vkRevoke(vkApi: VkApi[F],
                        vkBot: VkBot[F],
@@ -152,10 +153,14 @@ object Main extends IOApp {
           accessToken = getLongPollServerReq.accessToken
         )
       )
-      _ <- getConversationsRes.response.items.map(_.conversation).traverse {
-        case Conversation(Peer(peerId, _, _), _) =>
-          vkBot.sendMessage(Left(peerId), "Прошу прощения за заминки, сейчас я снова работаю") >>
-            Timer[F].sleep(2 seconds)
-      }
+      _ <- getConversationsRes.response.items.map(_.conversation)
+        .map { case Conversation(Peer(peerId, _, _), _) => peerId.toLong }
+        .grouped(100).toList
+        .flatMap(NonEmptyList.fromList)
+        .traverse {
+          peerIds =>
+            vkBot.sendMessage(Right(Some(peerIds)), "Не забыли про меня? Напишите название остановки - я подскажу время прибытия транспорта") >>
+              Timer[F].sleep(30 seconds)
+        }
     } yield ()
 }
