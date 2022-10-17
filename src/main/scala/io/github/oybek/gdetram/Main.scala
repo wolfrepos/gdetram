@@ -159,7 +159,7 @@ object Main extends IOApp {
         .flatMap(NonEmptyList.fromList)
         .traverse {
           peerIds =>
-            vkBot.sendMessage(Right(Some(peerIds)), "Не забыли про меня? Напишите название остановки - я подскажу время прибытия транспорта") >>
+            vkBot.sendMessage(Right(Some(peerIds)), "Не забыли про меня? Напишите название остановки - я подскажу время прибытия транспорта").attempt >>
               Timer[F].sleep(30 seconds)
         }
     } yield ()
